@@ -164,6 +164,7 @@ CourseJS.TimeSet = class TimeSet {
     constructor (times) {
         this.days = {Su: [], M: [], T: [], W: [], R: [], F: [], S: []};
         //TODO: Finish Function
+        //If no params, TBA
     }
 
     /**
@@ -191,13 +192,19 @@ CourseJS.TimeSet = class TimeSet {
     function getTimesByDay (day) {
 
     }
+
+    /**
+     * [TBA description]
+     */
+    get TBA () {
+        return TimeSet();
+    }
 }
 
 /**
  * [Time description]
  */
 CourseJS.Time = class Time {
-    //TODO: Consider TBA
     /**
      * [constructor description]
      * @param {String} [name] [description]
@@ -214,13 +221,6 @@ CourseJS.Time = class Time {
      */
     checkOverlap (time) {
         //TODO: Implement Function
-    }
-
-    /**
-     * [TBA description]
-     */
-    get TBA () {
-        return Time();
     }
 }
 
@@ -274,40 +274,73 @@ CourseJS.CourseInfo = class CourseInfo {
     }
 }
 
-//TODO: Documentation
 /**
  * [CourseLookup description]
  */
 CourseJS.CourseLookup = class CourseInfo {
     /**
      * [constructor description]
-     * @param {[type]} [name] [description]
      */
     constructor () {
-        //TODO: Implement Constructor
+        this.aliasMap = {};
+        this.dictionary = {};
     }
 
     /**
-     * [searchCourses description]
+     * [insertCourse description]
+     * @param {Course} course [description]
+     * @return {boolean} [description]
+     */
+    insertCourse (course) {
+        //TODO: Implement Function
+    }
+
+    /**
+     * [getCourseByAlias description]
+     * @param {String} alias [description]
+     * @return {Course} [description]
+     */
+    getCourseByAlias (alias) {
+        //TODO: Implement Function
+    }
+
+    /**
+     * [findCourseGroup description]
+     * @param {Course} course [description]
+     * @return {CourseGroup} [description]
+     */
+    findCourseGroup (course) {
+        //TODO: Implement Function
+    }
+
+    /**
+     * [findMatchingCourses description]
      * @param {SearchQuery} searchQuery [description]
      * @return {Array<Course>} [description]
      */
-    function searchCourses(searchQuery) {
+    findMatchingCourses (searchQuery) {
         //TODO: Implement Function
     }
 }
 
-//TODO: Documentation
 /**
  * [SearchQuery description]
  */
 CourseJS.SearchQuery = class CourseInfo {
     /**
      * [constructor description]
-     * @param {[type]} [name] [description]
+     * @param {Object} data [description]
      */
-    constructor () {
-        //TODO: Implement Constructor
+    constructor (data) {
+        this.data = data;
+        this.formatData();
+    }
+
+    /**
+     * [formatData description]
+     */
+    formatData () {
+        //TODO: Implement Function
     }
 }
 
@@ -316,7 +349,7 @@ CourseJS.SearchQuery = class CourseInfo {
  * @param {Array<String>} parsedData [description]
  * @return {CourseLookup} [description]
  */
-CourseJS.generateCourseLookup = function (parsedData) {
+CourseJS.generateCourseLookup = function (courses) {
     //TODO: Implement Function
 }
 

@@ -164,8 +164,8 @@ CourseJS.EntryGroup = class EntryGroup {
 
 /**
  * Class representing a schedule.
- * @prop {String} owner The owner of this schedule.
- * @prop {String} title The title of this schedule.
+ * @prop {String} owner The user who this schedule belongs to.
+ * @prop {String} title The title that the user gives to the Schedule.
  * @prop {Array<Entry|EntryGroup>} items The items making up the schedule.
  */
 CourseJS.Schedule = class Schedule {

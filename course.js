@@ -3,14 +3,14 @@ var CourseJS = {};
 
 /**
  * Class representing an entry.
- * @prop {String} alias [description]
- * @prop {TimeSet} times [description]
- * @prop {Info} info [description]
+ * @prop {String} alias A unique ID to reference this entry.
+ * @prop {TimeSet} times A TimeSet listing the times during the week that this entry takes place.
+ * @prop {Info} info An Info property that lists extra information about the particular entry.
  */
 CourseJS.Entry = class Entry {
     /**
      * Create an entry.
-     * @param {String} alias A unique ID to reference this entry by.
+     * @param {String} alias A unique ID to reference this entry.
      * @param {TimeSet} times A TimeSet listing the times during the week that this entry takes place.
      * @param {Info} info An Info property that lists extra information about the particular entry.
      */
@@ -41,14 +41,14 @@ CourseJS.Entry = class Entry {
 /**
  * Class representing a course.
  * @extends Info
- * @prop {String} alias [description]
- * @prop {TimeSet} times [description]
- * @prop {CourseInfo} info [description]
+ * @prop {String} alias A unique ID to reference this course.
+ * @prop {TimeSet} times A TimeSet property listing the times during the week that this course takes place.
+ * @prop {CourseInfo} info An Info property that lists extra information about the particular entry.
  */
 CourseJS.Course = class Course extends CourseJS.Entry {
     /**
      * Create a course.
-     * @param {String} alias A unique ID to reference this course by.
+     * @param {String} alias A unique ID to reference this course.
      * @param {TimeSet} times A TimeSet property listing the times during the week that this course takes place.
      * @param {CourseInfo} info A CourseInfo property that lists information about this course.
      */
@@ -67,10 +67,10 @@ CourseJS.Course = class Course extends CourseJS.Entry {
 
 /**
  * Class representing a group of entries.
- * @prop {Array<Entry>} entries [description]
- * @prop {String} title [description]
- * @prop {number} selected [description]
- * @prop {Array<number>} active [description]
+ * @prop {Array<Entry>} entries List of entries currently in this entry group.
+ * @prop {String} title Name of the entry group.
+ * @prop {number} selected An index for the entries array pointing to the currently selected entry.
+ * @prop {Array<number>} active An array of indexes for the entries array pointing to the currently active entries.
  */
 CourseJS.EntryGroup = class EntryGroup {
     /**
@@ -164,9 +164,9 @@ CourseJS.EntryGroup = class EntryGroup {
 
 /**
  * Class representing a schedule.
- * @prop {String} owner [description]
- * @prop {String} title [description]
- * @prop {Array<Entry|EntryGroup>} items [description]
+ * @prop {String} owner The owner of this schedule.
+ * @prop {String} title The title of this schedule.
+ * @prop {Array<Entry|EntryGroup>} items The items making up the schedule.
  */
 CourseJS.Schedule = class Schedule {
     /**
@@ -229,7 +229,7 @@ CourseJS.Schedule = class Schedule {
 
 /**
  * Class representing a time set.
- * @prop {Object} days [description]
+ * @prop {Object} days An object whose properties are days and whose values are arrays of times starting on that day.
  */
 CourseJS.TimeSet = class TimeSet {
     /**
@@ -280,8 +280,8 @@ CourseJS.TimeSet = class TimeSet {
 
 /**
  * Class representing a time.
- * @prop {Moment} start [description]
- * @prop {Moment} end [description]
+ * @prop {Moment} start The moment this time starts.
+ * @prop {Moment} end The moment this time ends.
  */
 CourseJS.Time = class Time {
     /**
@@ -305,9 +305,9 @@ CourseJS.Time = class Time {
 
 /**
  * Class representing an entry's information.
- * @prop {InfoProp} searchable [description]
- * @prop {InfoProp} regular [description]
- * @prop {InfoProp} hidden [description]
+ * @prop {InfoProp} searchable The searchable properties of this info.
+ * @prop {InfoProp} regular The regular properties of this info.
+ * @prop {InfoProp} hidden The hidden properties of this info.
  */
 CourseJS.Info = class Info {
     /**
@@ -334,12 +334,12 @@ CourseJS.Info = class Info {
 /**
  * Class representing a course's information.
  * @extends Info
- * @prop {InfoProp} searchable [description]
- * @prop {InfoProp} regular [description]
- * @prop {InfoProp} hidden [description]
- * @prop {String} number [description]
- * @prop {String} section [description]
- * @prop {String} subject [description]
+ * @prop {InfoProp} searchable The searchable properties of this info.
+ * @prop {InfoProp} regular The regular properties of this info.
+ * @prop {InfoProp} hidden The hidden properties of this info.
+ * @prop {String} number This course's number.
+ * @prop {String} section This course's section.
+ * @prop {String} subject This course's subject.
  */
 CourseJS.CourseInfo = class CourseInfo extends CourseJS.Info {
     /**
@@ -377,8 +377,8 @@ CourseJS.CourseInfo = class CourseInfo extends CourseJS.Info {
 
 /**
  * Class representing a course lookup.
- * @prop {Object} aliasMap [description]
- * @prop {Object} dictionary [description]
+ * @prop {Object} aliasMap A hashmap whose properties are aliases and whose values are their respective courses.
+ * @prop {Object} dictionary A dictionary navigatable through the form: dictionary[{search term}][{search match}].
  */
 CourseJS.CourseLookup = class CourseLookup {
     /**
@@ -428,7 +428,8 @@ CourseJS.CourseLookup = class CourseLookup {
 
 /**
  * Class representing a search query.
- * @prop {Object} data [description]
+ * @prop {Object} data A dictionary whose properties are search terms and whose values are strings containing a search match.
+ *                     Search Match can have tags and other delimiters to be formatted. (To Be Implemented Later)
  */
 CourseJS.SearchQuery = class CourseInfo {
     /**
@@ -449,19 +450,23 @@ CourseJS.SearchQuery = class CourseInfo {
 }
 
 /**
- * [Day description]
+ * A string representing a day of the week:
+ * {Sunday: "Su", Monday: "M", Tuesday: "T", Wednesday: "W", Thursday: "R", Friday: "F", Saturday: "S"}.
  * @typedef {String} Day
  */
 
 /**
- * [Moment description]
+ * An object representing a particular time.
  * @typedef {Object} Moment
- * @prop {Day} day [description]
- * @prop {number} time [description]
+ * @prop {Day} day The day this moment takes place on.
+ * @prop {number} time The time this moment takes place; formatted in military time.
  */
 
 /**
- * [InfoProp description]
+ * An object for use with info whose property:value pairs are the pieces of data.
+ * Searchable info props will be added as "search term":"search match" pairs in a course lookup.
+ * Regular info props have no special properties.
+ * Hidden info props should not be displayed to the user and are solely used for record keeping.
  * @typedef {Object} InfoProp
  */
 

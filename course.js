@@ -2,14 +2,15 @@
 var CourseJS = {};
 
 /**
- * [Entry description]
+ * Class representing an entry.
+ * @prop {[type]} [name] [description]
  */
 CourseJS.Entry = class Entry {
     /**
-     * [constructor description]
-     * @param {String} alias [description]
-     * @param {TimeSet} times [description]
-     * @param {Info} info [description]
+     * Create an entry.
+     * @param {String} alias A unique ID to reference this entry by.
+     * @param {TimeSet} times A TimeSet listing the times during the week that this entry takes place.
+     * @param {Info} info An Info property that lists extra information about the particular entry.
      */
     constructor (alias, times, info) {
         this.alias = alias;
@@ -18,17 +19,17 @@ CourseJS.Entry = class Entry {
     }
 
     /**
-     * [checkTimeConflict description]
-     * @param {Course} otherCourse [description]
-     * @return {boolean} [description]
+     * Gets the overlapping TimeSet between this entry and another entry.
+     * @param {Entry} entry The entry to be compared against.
+     * @return {TimeSet|null} A time set with the overlapping times between the two entries.
      */
-    checkTimeConflict (otherCourse) {
+    getOverlappingTimeSet (entry) {
         //TODO: Implement Function
     }
 
     /**
-     * [getInfo description]
-     * @return {Info} [description]
+     * Gets information from this entry.
+     * @return {Info} This entry's info property.
      */
     getInfo () {
         return info;
@@ -36,165 +37,232 @@ CourseJS.Entry = class Entry {
 }
 
 /**
- * [Course description]
+ * Class representing a course.
+ * @extends Info
+ * @prop {[type]} [name] [description]
  */
 CourseJS.Course = class Course extends CourseJS.Entry {
     /**
-     * [constructor description]
-     * @param {String} alias [description]
-     * @param {TimeSet} times [description]
-     * @param {Info} info [description]
-     * @param {CourseInfo} courseInfo [description]
+     * Create a course.
+     * @param {String} alias A unique ID to reference this course by.
+     * @param {TimeSet} times A TimeSet property listing the times during the week that this course takes place.
+     * @param {CourseInfo} info A CourseInfo property that lists information about this course.
      */
-    constructor (alias, times, info, courseInfo) {
+    constructor (alias, times, info) {
         super(alias, times, info);
-        this.courseInfo = courseInfo;
     }
 
     /**
-     * [getCourseInfo description]
-     * @return {CourseInfo} [description]
+     * Gets course related information from this Entry.
+     * @return {CourseInfo} This entry's courseInfo property.
      */
-    getCourseInfo () {
-        return courseInfo;
+    getInfo () {
+        return info;
     }
 }
 
 /**
- * [CourseGroup description]
+ * Class representing a group of entries.
+ * @prop {[type]} [name] [description]
  */
-CourseJS.CourseGroup = class CourseGroup {
+CourseJS.EntryGroup = class EntryGroup {
     /**
-     * [constructor description]
-     * @param {Array<Course>} courses [description]
+     * Create an entry group.
+     * @param {Array<Entry>} entries List of entries to be included in this entry group.
+     * @param {String|undefined} title Name of the entry group.
      */
-    constructor (courses) {
-        this.courses = courses;
-        this.number = courses[0].getCourseInfo().number;
-        this.subject = courses[0].getCourseInfo().subject;
-        //TODO: Implement Sections
-        this.selectedSections = [];
-        this.activeSections = [];
+    constructor (entries, title) {
+        this.entries = entries;
+        this.title = title;
+        this.selected;
+        this.active = [];
     }
 
     /**
-     * [checkTimeConflict description]
-     * @param {Course} otherCourse [description]
-     * @return {boolean} [description]
+     * Inserts an entry into this entry group.
+     * @param {Entry} entry Entry to be inserted into this entry group.
+     * @return {boolean} Value representing whether the entry was successfully able to be added.
      */
-    checkTimeConflict (otherCourse) {
+    insert (entry) {
         //TODO: Implement Function
     }
 
     /**
-     * [getCourseInfo description]
-     * @return {CourseInfo} [description]
+     * Sets an entry to be this entry group's selected entry.
+     * @param {Entry|undefined} entry Entry to be selected by this entry group.
+     * @return {boolean} Value representing whether the entry was successfully able to be selected.
      */
-    getCourseInfo () {
+    select (entry) {
+        //TODO: Implement Function
+    }
 
+    /**
+     * Activates all matching entries in this entry group.
+     * @param {Array<Entry>} entries Array of entries to be activated.
+     */
+    activate (entries) {
+        //TODO: Implement Function
+    }
+
+    /**
+     * Deactivates all matching entries in this entry group.
+     * @param {Array<Entry>} entries Array of entries to be deactivated.
+     */
+    deactivate (entries) {
+        //TODO: Implement Function
+    }
+
+    /**
+     * Gets this entry group's selected entry.
+     * @return {Entry|undefined} This entry group's selected entry.
+     */
+    getSelectedEntry () {
+        //TODO: Implement Function
+    }
+
+    /**
+     * Cets this entry group's activated entries.
+     * @return {Array<Entry>|undefined} Array of activated entries in this entry group.
+     */
+    getActivatedEntries () {
+        //TODO: Implement Function
+    }
+
+    /**
+     * Gets the overlapping time sets between an entry and this entry group's active entries.
+     * @param {Course} entry The entry to be compared against.
+     * @return {Array<TimeSet>} An array of time sets overlapping between the two entries.
+     */
+    getOverlappingTimeSets (entry) {
+        //TODO: Implement Function
+    }
+
+    /**
+     * Checks if this entry group and another entry group's active entries are compatible with one another.
+     * @param {EntryGroup} entryGroup The entry group to be compared against.
+     * @return {boolean} Value representing whether the two entry groups are compatible.
+     */
+    isCompatibleWithEntryGroup (entryGroup) {
+        //TODO: Implement Function
+    }
+
+    /**
+     * Gets all of this entry group's selected entry's information.
+     * @return {Info} This entry group's selected entry's Info property.
+     */
+    getInfo () {
+        //TODO: Implement Function
     }
 }
 
 /**
- * [Schedule description]
+ * Class representing a schedule.
+ * @prop {[type]} [name] [description]
  */
 CourseJS.Schedule = class Schedule {
     /**
-     * [constructor description]
-     * @param {String} owner [description]
-     * @param {Array<Entry|CourseGroup>} entries [description]
+     * Create a schedule.
+     * @param {String} owner The owner of this schedule.
+     * @param {String} title The title of this schedule.
+     * @param {Array<Entry|EntryGroup>} items The items making up the schedule.
      */
-    constructor (owner, entries) {
+    constructor (owner, title, items) {
         //TODO: Implement Constructor
     }
 
     /**
-     * [checkConflictWithSchedule description]
-     * @param {Entry} entry [description]
-     * @return {boolean} [description]
+     * Checks if an item is compatible with this schedule.
+     * If it's an entry group, checks if any of the active entries are compatible with the schedule.
+     * @param {Entry|EntryGroup} item Item to be added to the schedule.
+     * @return {boolean} Value representing whether the item is compatible with the schedule.
      */
-    checkConflictWithSchedule (entry) {
+    isCompatibleWithSchedule (item) {
         //TODO: Implement Function
     }
 
     /**
-     * [insertEntry description]
-     * @param {Entry} entry [description]
-     * @return {boolean} [description]
+     * Inserts an item into this schedule.
+     * @param {Entry|EntryGroup} item Item to be added to this schedule.
+     * @return {boolean} Value representing whether the item was successfully added.
      */
-    insertEntry (entry) {
+    insert (item) {
         //TODO: Implement Function
     }
 
     /**
-     * [getEntries description]
-     * @return {Array<Entry>} [description]
+     * Gets all of this schedule's entries and entry groups.
+     * @param {TimeSet|undefined} restriction Optional time set used to bound the search.
+     * @return {Array<Entry|EntryGroup>} An array of items making up the schedule.
      */
-    getEntries () {
+    getItems (restriction) {
         //TODO: Implement Function
     }
 
     /**
-     * [getEntriesForDay description]
-     * @param {String} day [description]
-     * @return {Array<Entry>} [description]
+     * Gets all of this schedule's entries and entry groups occuring on a certain day.
+     * @param {Day} day Day used to search for entries.
+     * @param {TimeSet|undefined} restriction Optional time set used to bound the search.
+     * @return {Array<Entry|EntryGroup>} An array of items making up the schedule occuring on a certain day.
      */
-    getEntriesForDay (day) {
+    getItemsForDay (day, restriction) {
         //TODO: Implement Function
     }
 
     /**
-     * [getFreeTime description]
-     * @param {Object=} restrictions [description]
-     * @return {TimeSet} [description]
+     * Gets a time set containing all of the free time in this schedule
+     * @param {TimeSet|undefined} restriction Optional time set used to bound the search.
+     * @return {TimeSet} A time set making up all of the free time in the schedule.
      */
-    getFreeTime (restrictions) {
+    getFreeTime (restriction) {
         //TODO: Implement Function
     }
 }
 
 /**
- * [TimeSet description]
+ * Class representing a time set.
+ * @prop {[type]} [name] [description]
  */
 CourseJS.TimeSet = class TimeSet {
     /**
-     * [constructor description]
-     * @param {Array<Time>=} times [description]
+     * Create a time set.
+     * @param {Array<Time>|undefined} times An array of times comprising the time set.
      */
     constructor (times) {
         this.days = {Su: [], M: [], T: [], W: [], R: [], F: [], S: []};
-        //TODO: Finish Function
-        //If no params, TBA
+        //TODO: Implement Constructor
+        //If no params, TBA TimeSet
     }
 
     /**
-     * [insertTime description]
-     * @param {Time} time [description]
-     * @return {boolean} [description]
+     * Inserts a time into the time set.
+     * @param {Time} time Time to be added to this time set.
+     * @return {boolean} Value representing whether the time was successfully added.
      */
-    function insertTime (time) {
-
+    function insert (time) {
+        //TODO: Implement Function
     }
 
     /**
-     * [getTimes description]
-     * @return {Array<Time>} [description]
+     * Gets all of this time set's times.
+     * @param {TimeSet|undefined} restriction Optional time set used to bound the search.
+     * @return {Array<Time>} An array of all of the times making up the time set.
      */
-    function getTimes () {
-
+    function getTimes (restriction) {
+        //TODO: Implement Function
     }
 
     /**
-     * [getTimesByDay description]
-     * @param {String} day [description]
-     * @return {Array<Time>} [description]
+     * Gets all of this time set's times.
+     * @param {Day} day Day used to search for entries.
+     * @param {TimeSet|undefined} restriction Optional time set used to bound the search.
+     * @return {Array<Time>} An array of all of the times making up the time set on a certain day.
      */
-    function getTimesByDay (day) {
-
+    function getTimesByDay (day, restriction) {
+        //TODO: Implement Function
     }
 
     /**
-     * [TBA description]
+     * Gets a TBA object
      */
     get TBA () {
         return TimeSet();
@@ -202,37 +270,39 @@ CourseJS.TimeSet = class TimeSet {
 }
 
 /**
- * [Time description]
+ * Class representing a time.
+ * @prop {[type]} [name] [description]
  */
 CourseJS.Time = class Time {
     /**
-     * [constructor description]
-     * @param {String} [name] [description]
-     * @param {String} [name] [description]
+     * Create a time.
+     * @param {Moment} start The moment this time starts.
+     * @param {Moment} end The moment this time ends.
      */
-    constructor (day, startTime, endTime) {
+    constructor (start, end) {
         //TODO: Implement Constructor
     }
 
     /**
-     * [getOverlap description]
-     * @param {Time} time [description]
-     * @return {boolean} [description]
+     * Gets this time's overlap with another time.
+     * @param {Time} time The time to be compared against.
+     * @return {Time} The time where the two times overlap.
      */
-    checkOverlap (time) {
+    getOverlap (time) {
         //TODO: Implement Function
     }
 }
 
 /**
- * [Info description]
+ * Class representing an entry's information.
+ * @prop {[type]} [name] [description]
  */
 CourseJS.Info = class Info {
     /**
-     * [constructor description]
-     * @param {Object} searchable [description]
-     * @param {Object} regular [description]
-     * @param {Object} hidden [description]
+     * Create an info.
+     * @param {InfoProp} searchable The searchable properties of this info.
+     * @param {InfoProp} regular The regular properties of this info.
+     * @param {InfoProp} hidden The hidden properties of this info.
      */
     constructor (searchable, regular, hidden) {
         this.searchable = searchable;
@@ -241,8 +311,8 @@ CourseJS.Info = class Info {
     }
 
     /**
-     * [toString description]
-     * @return {String} [description]
+     * Outputs this info as a string.
+     * @return {String} A string representation of this info.
      */
     toString () {
         //TODO: Implement Function
@@ -250,24 +320,38 @@ CourseJS.Info = class Info {
 }
 
 /**
- * [CourseInfo description]
+ * Class representing a course's information.
+ * @extends Info
+ * @prop {[type]} [name] [description]
  */
-CourseJS.CourseInfo = class CourseInfo {
+CourseJS.CourseInfo = class CourseInfo extends CourseJS.Info {
     /**
-     * [constructor description]
-     * @param {String} number [description]
-     * @param {String} section [description]
-     * @param {String} subject [description]
+     * Create a course info.
+     * @param {InfoProp} searchable The searchable properties of this info.
+     * @param {InfoProp} regular The regular properties of this info.
+     * @param {InfoProp} hidden The hidden properties of this info.
+     * @param {String} number This course's number.
+     * @param {String} section This course's section.
+     * @param {String} subject This course's subject.
      */
-    constructor (number, section, subject) {
+    constructor (searchable, regular, hidden, number, section, subject) {
+        super(searchable, regular, hidden);
         this.number = number;
         this.section = section;
         this.subject = subject;
     }
 
     /**
-     * [toString description]
-     * @return {String} [description]
+     * Creates an info object without this course's course dependent properties.
+     * @return {Info} An Info object without course dependent properties.
+     */
+    getNonCourseInfo () {
+        return new Info(this.searchable, this.regular, this.hidden);
+    }
+
+    /**
+     * Outputs this course info as a string.
+     * @return {String} A string representation of this info.
      */
     toString () {
         //TODO: Implement Function
@@ -275,11 +359,12 @@ CourseJS.CourseInfo = class CourseInfo {
 }
 
 /**
- * [CourseLookup description]
+ * Class representing a course lookup.
+ * @prop {[type]} [name] [description]
  */
-CourseJS.CourseLookup = class CourseInfo {
+CourseJS.CourseLookup = class CourseLookup {
     /**
-     * [constructor description]
+     * Create a course lookup.
      */
     constructor () {
         this.aliasMap = {};
@@ -287,36 +372,36 @@ CourseJS.CourseLookup = class CourseInfo {
     }
 
     /**
-     * [insertCourse description]
-     * @param {Course} course [description]
-     * @return {boolean} [description]
+     * Inserts a course into this course lookup.
+     * @param {Course} course Course to be added to this course lookup.
+     * @return {boolean} Value representing whether the course was successfully added.
      */
-    insertCourse (course) {
+    insert (course) {
         //TODO: Implement Function
     }
 
     /**
-     * [getCourseByAlias description]
-     * @param {String} alias [description]
-     * @return {Course} [description]
+     * Gets a course from this course lookup using it's alias.
+     * @param {String} alias Alias to use when searching for course.
+     * @return {Course} The course associated with the given alias.
      */
     getCourseByAlias (alias) {
         //TODO: Implement Function
     }
 
     /**
-     * [findCourseGroup description]
-     * @param {Course} course [description]
-     * @return {CourseGroup} [description]
+     * Finds the other sections of a course and puts them into an entry group.
+     * @param {Course} course Course to search for other sections of.
+     * @return {EntryGroup} An entry group consisting of the given course and it's other sections.
      */
-    findCourseGroup (course) {
+    findOtherSectionsOfCourse (course) {
         //TODO: Implement Function
     }
 
     /**
-     * [findMatchingCourses description]
-     * @param {SearchQuery} searchQuery [description]
-     * @return {Array<Course>} [description]
+     * Finds all courses that match a given search query.
+     * @param {SearchQuery} searchQuery A search query to be applied to the course lookup.
+     * @return {Array<Course>} An array consisting of all the courses that match the given search query.
      */
     findMatchingCourses (searchQuery) {
         //TODO: Implement Function
@@ -324,12 +409,13 @@ CourseJS.CourseLookup = class CourseInfo {
 }
 
 /**
- * [SearchQuery description]
+ * Class representing a search query.
+ * @prop {[type]} [name] [description]
  */
 CourseJS.SearchQuery = class CourseInfo {
     /**
-     * [constructor description]
-     * @param {Object} data [description]
+     * Create a search query.
+     * @param {Object} data The Data to be used to build the search query.
      */
     constructor (data) {
         this.data = data;
@@ -337,7 +423,7 @@ CourseJS.SearchQuery = class CourseInfo {
     }
 
     /**
-     * [formatData description]
+     * Interprets this search query's data and formats it.
      */
     formatData () {
         //TODO: Implement Function
@@ -345,18 +431,33 @@ CourseJS.SearchQuery = class CourseInfo {
 }
 
 /**
- * [generateCourseLookup description]
- * @param {Array<String>} parsedData [description]
- * @return {CourseLookup} [description]
+ * @typedef {Object} Day
+ * @prop {[type]} [name] [description]
+ */
+
+/**
+ * @typedef {Object} Moment
+ * @prop {[type]} [name] [description]
+ */
+
+/**
+ * @typedef {Object} InfoProp
+ * @prop {[type]} [name] [description]
+ */
+
+/**
+ * Creates a course lookup from an array of functions.
+ * @param {Array<Course>} courses The array of courses to use to build the course lookup.
+ * @return {CourseLookup} The course lookup with all of the courses inserted.
  */
 CourseJS.generateCourseLookup = function (courses) {
     //TODO: Implement Function
 }
 
 /**
- * [generateScheduleListFromEntries description]
- * @param {Array<Entry>} entryArray [description]
- * @return {Array<Schedule>} [description]
+ * Creates an array of possible schedules from an array of entries and entry groups.
+ * @param {Array<Entry|EntryGroup>} entryArray The array of entries and entry groups for building the possible schedules.
+ * @return {Array<Schedule>} The array of possible schedules from the given entries.
  */
 CourseJS.generateScheduleListFromEntries = function (entryArray) {
     //TODO: Implement Function

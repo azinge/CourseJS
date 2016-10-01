@@ -3,7 +3,9 @@ var CourseJS = {};
 
 /**
  * Class representing an entry.
- * @prop {[type]} [name] [description]
+ * @prop {String} alias [description]
+ * @prop {TimeSet} times [description]
+ * @prop {Info} info [description]
  */
 CourseJS.Entry = class Entry {
     /**
@@ -21,7 +23,7 @@ CourseJS.Entry = class Entry {
     /**
      * Gets the overlapping TimeSet between this entry and another entry.
      * @param {Entry} entry The entry to be compared against.
-     * @return {TimeSet|null} A time set with the overlapping times between the two entries.
+     * @return {TimeSet|undefined} A time set with the overlapping times between the two entries.
      */
     getOverlappingTimeSet (entry) {
         //TODO: Implement Function
@@ -39,7 +41,9 @@ CourseJS.Entry = class Entry {
 /**
  * Class representing a course.
  * @extends Info
- * @prop {[type]} [name] [description]
+ * @prop {String} alias [description]
+ * @prop {TimeSet} times [description]
+ * @prop {CourseInfo} info [description]
  */
 CourseJS.Course = class Course extends CourseJS.Entry {
     /**
@@ -63,7 +67,10 @@ CourseJS.Course = class Course extends CourseJS.Entry {
 
 /**
  * Class representing a group of entries.
- * @prop {[type]} [name] [description]
+ * @prop {Array<Entry>} entries [description]
+ * @prop {String} title [description]
+ * @prop {number} selected [description]
+ * @prop {Array<number>} active [description]
  */
 CourseJS.EntryGroup = class EntryGroup {
     /**
@@ -157,7 +164,9 @@ CourseJS.EntryGroup = class EntryGroup {
 
 /**
  * Class representing a schedule.
- * @prop {[type]} [name] [description]
+ * @prop {String} owner [description]
+ * @prop {String} title [description]
+ * @prop {Array<Entry|EntryGroup>} items [description]
  */
 CourseJS.Schedule = class Schedule {
     /**
@@ -220,7 +229,7 @@ CourseJS.Schedule = class Schedule {
 
 /**
  * Class representing a time set.
- * @prop {[type]} [name] [description]
+ * @prop {Object} days [description]
  */
 CourseJS.TimeSet = class TimeSet {
     /**
@@ -271,7 +280,8 @@ CourseJS.TimeSet = class TimeSet {
 
 /**
  * Class representing a time.
- * @prop {[type]} [name] [description]
+ * @prop {Moment} start [description]
+ * @prop {Moment} end [description]
  */
 CourseJS.Time = class Time {
     /**
@@ -295,7 +305,9 @@ CourseJS.Time = class Time {
 
 /**
  * Class representing an entry's information.
- * @prop {[type]} [name] [description]
+ * @prop {InfoProp} searchable [description]
+ * @prop {InfoProp} regular [description]
+ * @prop {InfoProp} hidden [description]
  */
 CourseJS.Info = class Info {
     /**
@@ -322,7 +334,12 @@ CourseJS.Info = class Info {
 /**
  * Class representing a course's information.
  * @extends Info
- * @prop {[type]} [name] [description]
+ * @prop {InfoProp} searchable [description]
+ * @prop {InfoProp} regular [description]
+ * @prop {InfoProp} hidden [description]
+ * @prop {String} number [description]
+ * @prop {String} section [description]
+ * @prop {String} subject [description]
  */
 CourseJS.CourseInfo = class CourseInfo extends CourseJS.Info {
     /**
@@ -360,7 +377,8 @@ CourseJS.CourseInfo = class CourseInfo extends CourseJS.Info {
 
 /**
  * Class representing a course lookup.
- * @prop {[type]} [name] [description]
+ * @prop {Object} aliasMap [description]
+ * @prop {Object} dictionary [description]
  */
 CourseJS.CourseLookup = class CourseLookup {
     /**
@@ -410,7 +428,7 @@ CourseJS.CourseLookup = class CourseLookup {
 
 /**
  * Class representing a search query.
- * @prop {[type]} [name] [description]
+ * @prop {Object} data [description]
  */
 CourseJS.SearchQuery = class CourseInfo {
     /**
@@ -431,18 +449,20 @@ CourseJS.SearchQuery = class CourseInfo {
 }
 
 /**
- * @typedef {Object} Day
- * @prop {[type]} [name] [description]
+ * [Day description]
+ * @typedef {String} Day
  */
 
 /**
+ * [Moment description]
  * @typedef {Object} Moment
- * @prop {[type]} [name] [description]
+ * @prop {Day} day [description]
+ * @prop {number} time [description]
  */
 
 /**
+ * [InfoProp description]
  * @typedef {Object} InfoProp
- * @prop {[type]} [name] [description]
  */
 
 /**

@@ -34,9 +34,9 @@ CourseJS.Entry = class Entry {
      * @return {Info} This entry's info property.
      */
     getInfo () {
-        return info;
+        //TODO: Implement Function
     }
-}
+};
 
 /**
  * Class representing a course.
@@ -61,9 +61,9 @@ CourseJS.Course = class Course extends CourseJS.Entry {
      * @return {CourseInfo} This entry's courseInfo property.
      */
     getInfo () {
-        return info;
+        //TODO: Implement Function
     }
-}
+};
 
 /**
  * Class representing a group of entries.
@@ -81,7 +81,7 @@ CourseJS.EntryGroup = class EntryGroup {
     constructor (entries, title) {
         this.entries = entries;
         this.title = title;
-        this.selected;
+        this.selected = -1;
         this.active = [];
     }
 
@@ -160,7 +160,7 @@ CourseJS.EntryGroup = class EntryGroup {
     getInfo () {
         //TODO: Implement Function
     }
-}
+};
 
 /**
  * Class representing a schedule.
@@ -225,7 +225,7 @@ CourseJS.Schedule = class Schedule {
     getFreeTime (restriction) {
         //TODO: Implement Function
     }
-}
+};
 
 /**
  * Class representing a time set.
@@ -247,7 +247,7 @@ CourseJS.TimeSet = class TimeSet {
      * @param {Time} time Time to be added to this time set.
      * @return {boolean} Value representing whether the time was successfully added.
      */
-    function insert (time) {
+    insert (time) {
         //TODO: Implement Function
     }
 
@@ -256,7 +256,7 @@ CourseJS.TimeSet = class TimeSet {
      * @param {TimeSet|undefined} restriction Optional time set used to bound the search.
      * @return {Array<Time>} An array of all of the times making up the time set.
      */
-    function getTimes (restriction) {
+    getTimes (restriction) {
         //TODO: Implement Function
     }
 
@@ -266,7 +266,7 @@ CourseJS.TimeSet = class TimeSet {
      * @param {TimeSet|undefined} restriction Optional time set used to bound the search.
      * @return {Array<Time>} An array of all of the times making up the time set on a certain day.
      */
-    function getTimesByDay (day, restriction) {
+    getTimesByDay (day, restriction) {
         //TODO: Implement Function
     }
 
@@ -276,7 +276,7 @@ CourseJS.TimeSet = class TimeSet {
     get TBA () {
         return TimeSet();
     }
-}
+};
 
 /**
  * Class representing a time.
@@ -301,7 +301,7 @@ CourseJS.Time = class Time {
     getOverlap (time) {
         //TODO: Implement Function
     }
-}
+};
 
 /**
  * Class representing an entry's information.
@@ -329,7 +329,7 @@ CourseJS.Info = class Info {
     toString () {
         //TODO: Implement Function
     }
-}
+};
 
 /**
  * Class representing a course's information.
@@ -363,7 +363,7 @@ CourseJS.CourseInfo = class CourseInfo extends CourseJS.Info {
      * @return {Info} An Info object without course dependent properties.
      */
     getNonCourseInfo () {
-        return new Info(this.searchable, this.regular, this.hidden);
+        return new CourseJS.Info(this.searchable, this.regular, this.hidden);
     }
 
     /**
@@ -373,7 +373,7 @@ CourseJS.CourseInfo = class CourseInfo extends CourseJS.Info {
     toString () {
         //TODO: Implement Function
     }
-}
+};
 
 /**
  * Class representing a course lookup.
@@ -424,7 +424,7 @@ CourseJS.CourseLookup = class CourseLookup {
     findMatchingCourses (searchQuery) {
         //TODO: Implement Function
     }
-}
+};
 
 /**
  * Class representing a search query.
@@ -447,7 +447,7 @@ CourseJS.SearchQuery = class CourseInfo {
     formatData () {
         //TODO: Implement Function
     }
-}
+};
 
 /**
  * A string representing a day of the week:
@@ -477,7 +477,7 @@ CourseJS.SearchQuery = class CourseInfo {
  */
 CourseJS.generateCourseLookup = function (courses) {
     //TODO: Implement Function
-}
+};
 
 /**
  * Creates an array of possible schedules from an array of entries and entry groups.
@@ -486,4 +486,4 @@ CourseJS.generateCourseLookup = function (courses) {
  */
 CourseJS.generateScheduleListFromEntries = function (entryArray) {
     //TODO: Implement Function
-}
+};

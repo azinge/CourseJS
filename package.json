@@ -1,0 +1,24 @@
+{
+    "name": "coursejs",
+    "version": "1.0.0",
+    "description": "A JavaScript Library for working with College Schedules",
+    "main": "index.js",
+    "scripts": {
+        "test": "node_modules/.bin/mocha -w"
+    },
+    "keywords": [],
+    "author": "cazinge",
+    "license": "ISC",
+    "repository": {
+    "type": "git",
+        "url": "https://github.com/cazinge/coursejs"
+    },
+    "bugs": {
+        "url": "https://github.com/cazinge/coursejs/issues"
+    },
+    "homepage": "https://github.com/cazinge/coursejs",
+    "devDependencies": {
+        "chai": "*",
+        "mocha": "*"
+    }
+}

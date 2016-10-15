@@ -128,7 +128,7 @@ CourseJS.EntryGroup = class EntryGroup {
     }
 
     /**
-     * Cets this entry group's activated entries.
+     * Gets this entry group's activated entries.
      * @return {Array<Entry>|undefined} Array of activated entries in this entry group.
      */
     getActivatedEntries () {

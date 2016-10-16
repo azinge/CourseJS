@@ -244,6 +244,7 @@ CourseJS.TimeSet = class TimeSet {
 
     /**
      * Inserts a time into the time set.
+     * Will split times crossing midnight into multiple separate times.
      * @param {Time} time Time to be added to this time set.
      * @return {boolean} Value representing whether the time was successfully added.
      */

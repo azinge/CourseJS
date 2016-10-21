@@ -60,7 +60,7 @@ CourseJS.Course = class Course extends CourseJS.Entry {
      * Gets course related information from this Entry.
      * @return {CourseInfo} This entry's courseInfo property.
      */
-    getInfo () {
+    getCourseInfo () {
         //TODO: Implement Function
     }
 };
@@ -274,7 +274,7 @@ CourseJS.TimeSet = class TimeSet {
     /**
      * Gets a TBA object
      */
-    get TBA () {
+    getTBA () {
         return TimeSet();
     }
 };
@@ -432,7 +432,7 @@ CourseJS.CourseLookup = class CourseLookup {
  * @prop {Object} data A dictionary whose properties are search terms and whose values are strings containing a search match.
  *                     Search Match can have tags and other delimiters to be formatted. (To Be Implemented Later)
  */
-CourseJS.SearchQuery = class CourseInfo {
+CourseJS.SearchQuery = class SearchQuery {
     /**
      * Create a search query.
      * @param {Object} data The Data to be used to build the search query.

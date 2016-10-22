@@ -291,13 +291,21 @@ CourseJS.Time = class Time {
      * @param {Moment} end The moment this time ends.
      */
     constructor (start, end) {
-        //TODO: Implement Constructor
+        if (typeof start != 'object' || !start.hasOwnProperty('day') || !start.hasOwnProperty('time') ||
+                typeof end != 'object' || !end.hasOwnProperty('day') || !end.hasOwnProperty('time')) {
+            throw "error in Time constructor: start and end must be of type Moment";
+        } else if (start.day === end.day && start.time === end.time) {
+            throw "error in Time constructor: start and end cannot be the same Moment";
+        }
+
+        this.start = start;
+        this.end = end;
     }
 
     /**
      * Gets this time's overlap with another time.
      * @param {Time} time The time to be compared against.
-     * @return {Time} The time where the two times overlap.
+     * @return {Time} time The time where the two times overlap.
      */
     getOverlap (time) {
         //TODO: Implement Function
@@ -452,7 +460,7 @@ CourseJS.SearchQuery = class SearchQuery {
 
 /**
  * A string representing a day of the week:
- * {Sunday: "Su", Monday: "M", Tuesday: "T", Wednesday: "W", Thursday: "R", Friday: "F", Saturday: "S"}.
+ * {Sunday: "Sun", Monday: "Mon", Tuesday: "Tue", Wednesday: "Wed", Thursday: "Thu", Friday: "Fri", Saturday: "Sat"}.
  * @typedef {String} Day
  */
 

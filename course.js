@@ -291,7 +291,8 @@ CourseJS.Time = class Time {
      * @param {Moment} end The moment this time ends.
      */
     constructor (start, end) {
-        //TODO: Implement Constructor
+        this.start = start;
+        this.end = end;
     }
 
     /**
@@ -300,7 +301,23 @@ CourseJS.Time = class Time {
      * @return {Time} The time where the two times overlap.
      */
     getOverlap (time) {
-        //TODO: Implement Function
+        if (this.start < time.start && time.start < this.end) {
+            if(time.end<this.end || time.end === this.end) {
+                return (new Time(time.start, time.end)); 
+            } else return (new Time(time.start, this.end));
+        } else if (time.start < this.start && this.start < time.end) {
+            if(this.end<time.end || this.end === time.end) {
+                return (new Time(this.start, this.end));
+            } else return(new Time(this.start, time.end))
+        }
+        return Time();
+    }
+
+    /**
+     * Gets a TBA object
+     */
+    get TBA () {
+        return TimeSet();
     }
 };
 

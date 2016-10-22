@@ -137,11 +137,16 @@ describe('TimeSet', function() {
             expect(TimeSet([undefined, undefined])).to.equal(undefined);
         });
 
-        it('should return an undefined timeSet if the times given are undefined (TBA)', function() {
+        it('should return normal timeSet if normal times are given', function() {
             time1 = Time({day:'Mon', time:800}, {day:'Mon', time:850});
             time2 = Time({day:'Wed', time:800}, {day:'Wed', time:850});
             time3 = Time({day:'Fri', time:800}, {day:'Fri', time:850});
             expect(TimeSet(time1, time2, time3)).to.equal({days:{Sun:[], Mon:[time1], Tue:[], Wed:[time2], Thu:[], Fri:[time3], Sat:[]}});
+        });
+
+        it('should put a time into the day of its start if it spans over multiple days', function() {
+            time1 = Time({day:'Mon', time:1800}, {day:'Tue', time:200});
+            expect(TimeSet(time1, time2, time3)).to.equal({days:{Sun:[], Mon:[time1], Tue:[], Wed:[], Thu:[], Fri:[], Sat:[]}});
         });
 
         it('should return a normal timeSet if the objects given are times with additional properties', function() {

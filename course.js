@@ -60,7 +60,7 @@ CourseJS.Course = class Course extends CourseJS.Entry {
      * Gets course related information from this Entry.
      * @return {CourseInfo} This entry's courseInfo property.
      */
-    getCourseInfo () {
+    getInfo () {
         //TODO: Implement Function
     }
 };
@@ -274,7 +274,7 @@ CourseJS.TimeSet = class TimeSet {
     /**
      * Gets a TBA object
      */
-    getTBA () {
+    get TBA () {
         return TimeSet();
     }
 };
@@ -338,7 +338,7 @@ CourseJS.Time = class Time {
     /**
      * Gets a TBA object
      */
-    getTBA () {
+    get TBA () {
         return Time();
     }
 };

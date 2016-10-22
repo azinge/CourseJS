@@ -129,7 +129,30 @@ describe('TimeSet', function() {
 
     // constructor test
     describe('#TimeSet()', function() {
-        //TODO: Implement Test
+        it('should return an undefined timeSet if no parameters are given', function() {
+            expect(TimeSet()).to.equal(undefined);
+        });
+
+        it('should return an undefined timeSet if the times given are undefined (TBA)', function() {
+            expect(TimeSet([undefined, undefined])).to.equal(undefined);
+        });
+
+        it('should return an undefined timeSet if the times given are undefined (TBA)', function() {
+            time1 = Time({day:'Mon', time:800}, {day:'Mon', time:850});
+            time2 = Time({day:'Wed', time:800}, {day:'Wed', time:850});
+            time3 = Time({day:'Fri', time:800}, {day:'Fri', time:850});
+            expect(TimeSet(time1, time2, time3)).to.equal({days:{Sun:[], Mon:[time1], Tue:[], Wed:[time2], Thu:[], Fri:[time3], Sat:[]}});
+        });
+
+        it('should return a normal timeSet if the objects given are times with additional properties', function() {
+            time1 = {start:{flavor:'chocolate', day:'Mon', time:800}, end:{flavor:'vanilla', day:'Mon', time:850}};
+            expect(TimeSet(time1)).to.equal({days:[Time({day:'Mon', time:800}, {day:'Mon', time:850})]});
+        });
+
+        it('should throw an error if the given objects given are not times', function() {
+            time1 = {start:{flavor:'chocolate', quantity: 2}, end:{flavor:'vanilla', quantity:850}};
+            expect(TimeSet(time1)).to.equal({days:[Time({day:'Mon', time:800}, {day:'Mon', time:850})]});
+        });
     });
 
     // insert test
@@ -160,10 +183,8 @@ describe('Time', function() {
             expect(Time(start, end)).to.deepEqual({start:start, end:end});
         });
 
-        it('should throw an error when the start or end are undefined', function() {
-            var start;
-            var end;
-            expect(Time(start, end)).to.throw(Error);
+        it('should throw an undefined time when the start or end are undefined', function() {
+            expect(Time()).equal(undefined);
         });
 
         it('should throw an error when start and end are the same moment', function() {
@@ -183,10 +204,39 @@ describe('Time', function() {
             var end = {name:'narwhal', age:'infinity'};
             expect(Time(start, end)).to.throw(Error);
         });
+
+        it('should throw an error when start or end do not have military time numbers', function() {
+            var start = {day:'Mon', time:890};
+            var end = {day:'Mon', time:900};
+            expect(Time(start, end)).to.throw(Error);
+        });
+
+        it('should throw an error when start or end do not have military time numbers', function() {
+            var start = {day:'Mon', time:800};
+            var end = {day:'Mon', time:2400};
+            expect(Time(start, end)).to.throw(Error);
+        });
+
+        it('should throw an error when start or end are not real days', function() {
+            var start = {day:'Man', time:800};
+            var end = {day:'Tuo', time:900};
+            expect(Time(start, end)).to.throw(Error);
+        });
     });
 
     // getOverlap test
     describe('#getOverlap()', function() {
+        it('should return the overlapping time between two times', function() {
+            var time1 = Time({day:'Mon', time:0}, {day:'Tue', time:0});
+            var time2 = Time({day:'Mon', time:1200}, {day:'Tue', time:1200});
+            expect(time1.getOverlap(time2)).deepEqual({start:{day:'Mon', time:1200}, end:{day:'Tue', time:0}});
+        });
+
+        it('should return the overlapping time between two times', function() {
+            var time1 = Time({day:'Mon', time:0}, {day:'Tue', time:0});
+            var time2 = Time({day:'Mon', time:1200}, {day:'Tue', time:1200});
+            expect(time1.getOverlap(time2)).deepEqual({start:{day:'Mon', time:1200}, end:{day:'Tue', time:0}});
+        });
 
         it('should return the overlapping time between two times', function() {
             var time1 = Time({day:'Mon', time:0}, {day:'Tue', time:0});
@@ -210,6 +260,13 @@ describe('Time', function() {
             var time1 = Time({day:'Sat', time:0}, {day:'Sat', time:1000});
             var time2 = Time({day:'Sat', time:1000}, {day:'Sat', time:2000});
             expect(time1.getOverlap(time2)).equal({});
+        });
+    });
+
+    // getTBA test
+    describe('#getTBA()', function() {
+        it('should return an undefined time', function() {
+            expect(getTBA()).equal(undefined);
         });
     });
 });

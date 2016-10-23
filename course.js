@@ -314,14 +314,45 @@ CourseJS.Time = class Time {
      * @param {Moment} end The moment this time ends.
      */
     constructor (start, end) {
-        this.start = start;
-        this.end = end;
+
+        // create undefined (TBA) time if start and end are not given
+        if (start === undefined || end === undefined) {
+            return;
+        }
+
+        // throw an error if start or end are not Moments
+        else if (typeof start != 'object' || !start.hasOwnProperty('day') || !start.hasOwnProperty('time') ||
+                typeof end != 'object' || !end.hasOwnProperty('day') || !end.hasOwnProperty('time')) {
+            throw "error in Time constructor: start and end must be of type Moment";
+        }
+
+        // throw error if start and end are the same Moment
+        else if (start.day === end.day && start.time === end.time) {
+            throw "error in Time constructor: start and end cannot be the same Moment";
+        }
+
+        // throw error if start or end have incorrect numbers represeting a military time
+        else if (start.time >= 2400 || start.time < 0 || start.time % 100 >= 60 || start.time % 1 !== 0 ||
+                end.time >= 2400 || end.time < 0 || end.time % 100 >= 60 || end.time % 1 !== 0) {
+            throw "error in Time constructor: start and end must have military times for their times";
+        }
+
+        // throw error if start or end have strings that aren't real days
+        else if (start.day !== 'Sun' || start.day !== 'Mon' || start.day !== 'Tue' || start.day !== 'Wed' || start.day !== 'Thu' || start.day !== 'Fri' || start.day !== 'Sat' ||
+                end.day !== 'Sun' || end.day !== 'Mon' || end.day !== 'Tue' || end.day !== 'Wed' || end.day !== 'Thu' || end.day !== 'Fri' || end.day !== 'Sat') {
+            throw "error in Time constructor: days must be one of the following {Sun, Mon, Tue, Wed, Thu, Fri, Sat, Sun}";
+        }
+
+        else {
+            this.start = start;
+            this.end = end;
+        }
     }
 
     /**
      * Gets this time's overlap with another time.
      * @param {Time} time The time to be compared against.
-     * @return {Time} The time where the two times overlap.
+     * @return {Time} time The time where the two times overlap.
      */
     getOverlap (time) {
         var startTime = this.start.time;
@@ -347,6 +378,13 @@ CourseJS.Time = class Time {
      */
     get TBA () {
         return TimeSet();
+    }
+
+    /**
+     * Gets a TBA object
+     */
+    get TBA () {
+        return Time();
     }
 };
 
@@ -478,7 +516,7 @@ CourseJS.CourseLookup = class CourseLookup {
  * @prop {Object} data A dictionary whose properties are search terms and whose values are strings containing a search match.
  *                     Search Match can have tags and other delimiters to be formatted. (To Be Implemented Later)
  */
-CourseJS.SearchQuery = class CourseInfo {
+CourseJS.SearchQuery = class SearchQuery {
     /**
      * Create a search query.
      * @param {Object} data The Data to be used to build the search query.
@@ -498,7 +536,7 @@ CourseJS.SearchQuery = class CourseInfo {
 
 /**
  * A string representing a day of the week:
- * {Sunday: "Su", Monday: "M", Tuesday: "T", Wednesday: "W", Thursday: "R", Friday: "F", Saturday: "S"}.
+ * {Sunday: "Sun", Monday: "Mon", Tuesday: "Tue", Wednesday: "Wed", Thursday: "Thu", Friday: "Fri", Saturday: "Sat"}.
  * @typedef {String} Day
  */
 

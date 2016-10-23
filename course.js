@@ -268,7 +268,7 @@ CourseJS.TimeSet = class TimeSet {
             for (i = 0; i < this.TimeSet.days[time.start.day].length; i++){
                 if (time.getOverlap(this.TimeSet.days[time.start.day][i]) !== Time()) {
                     return false;
-                } 
+                }
             }
             this.TimeSet.days[time.start.day].push(times[i].start.day);
             return true;
@@ -315,14 +315,9 @@ CourseJS.Time = class Time {
      */
     constructor (start, end) {
 
-        // create undefined (TBA) time if start and end are not given
-        if (start === undefined || end === undefined) {
-            return;
-        }
-
         // throw an error if start or end are not Moments
-        else if (typeof start != 'object' || !start.hasOwnProperty('day') || !start.hasOwnProperty('time') ||
-                typeof end != 'object' || !end.hasOwnProperty('day') || !end.hasOwnProperty('time')) {
+        if (typeof start != 'object' || !start.day || !start.time ||
+                typeof end != 'object' || !end.day || !end.time) {
             throw "error in Time constructor: start and end must be of type Moment";
         }
 
@@ -362,7 +357,7 @@ CourseJS.Time = class Time {
 
         if (startTime < otherStartTime && otherStartTime < endTime) {
             if(otherEndTime<endTime || otherEndTime === endTime) {
-                return (new Time(otherStartTime, otherEndTime)); 
+                return (new Time(otherStartTime, otherEndTime));
             } else return (new Time(otherStartTime, endTime));
         } else if (otherStartTime < startTime && startTime < otherEndTime) {
             if(endTime<otherEndTime || endTime === otherEndTime) {
@@ -378,13 +373,6 @@ CourseJS.Time = class Time {
      */
     get TBA () {
         return TimeSet();
-    }
-
-    /**
-     * Gets a TBA object
-     */
-    get TBA () {
-        return Time();
     }
 };
 
@@ -402,17 +390,12 @@ CourseJS.Info = class Info {
      * @param {InfoProp} hidden The hidden properties of this info.
      */
     constructor (searchable, regular, hidden) {
+        if (typeof searchable !== 'object' || typeof regular !== 'object' || typeof hidden !== 'object') {
+            throw "error in Info constructor: input for InfoProps should be objects";
+        }
         this.searchable = searchable;
         this.regular = regular;
         this.hidden = hidden;
-    }
-
-    /**
-     * Outputs this info as a string.
-     * @return {String} A string representation of this info.
-     */
-    toString () {
-        //TODO: Implement Function
     }
 };
 
@@ -437,6 +420,9 @@ CourseJS.CourseInfo = class CourseInfo extends CourseJS.Info {
      * @param {String} subject This course's subject.
      */
     constructor (searchable, regular, hidden, number, section, subject) {
+        if (typeof number !== 'string' || typeof section !== 'string' || typeof subject !== 'string') {
+            throw "error in CourseInfo constructor: input for number, section, and subject should be strings";
+        }
         super(searchable, regular, hidden);
         this.number = number;
         this.section = section;
@@ -449,14 +435,6 @@ CourseJS.CourseInfo = class CourseInfo extends CourseJS.Info {
      */
     getNonCourseInfo () {
         return new CourseJS.Info(this.searchable, this.regular, this.hidden);
-    }
-
-    /**
-     * Outputs this course info as a string.
-     * @return {String} A string representation of this info.
-     */
-    toString () {
-        //TODO: Implement Function
     }
 };
 
@@ -572,3 +550,5 @@ CourseJS.generateCourseLookup = function (courses) {
 CourseJS.generateScheduleListFromEntries = function (entryArray) {
     //TODO: Implement Function
 };
+
+module.exports = CourseJS;

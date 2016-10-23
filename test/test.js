@@ -1,19 +1,25 @@
 var expect = require('chai').expect;
-// Example test
-describe('Array', function() {
-    describe('#indexOf()', function() {
-        it('should return -1 when the value is not present', function() {
-            expect([1,2,3].indexOf(4)).to.equal(-1);
-        });
-    });
-});
+var CourseJS = require('../course.js');
 
 // Entry Tests
 describe('Entry', function() {
 
     // constructor test
     describe('#Entry()', function() {
-        //TODO: Implement Test
+        var time1 = new CourseJS.Time({day:'Mon', time:800}, {day:'Mon', time:850});
+        var time2 = new CourseJS.Time({day:'Wed', time:800}, {day:'Wed', time:850});
+        var time3 = new CourseJS.Time({day:'Fri', time:800}, {day:'Fri', time:850});
+
+        it('should create an entry with the given alias, timeSet, and info', function() {
+            var times = new CourseJS.TimeSet([time1, time2, time3]);
+            var info = new CourseJS.Info({}, {}, {});
+            expect(new CourseJS.Entry('43245', times, info)).to.deepEqual({alias:'43245', times:times, info:info});
+        });
+
+        it('should throw an error if the arguments are not string, timeSet, and info', function() {
+            var times = new CourseJS.TimeSet([time1, time2, time3]);
+            expect(new CourseJS.Entry({}, 5, 'info')).to.throw(Error);
+        });
     });
 
     // getOverlappingTimeSet test
@@ -32,12 +38,29 @@ describe('Course', function() {
 
     // constructor Test
     describe('#Course()', function() {
-        //TODO: Implement Test
+
+        it('should', function() {
+            var time1 = new  CourseJS.Time({day:'Mon', time:800}, {day:'Mon', time:850});
+            var time2 = new CourseJS.Time({day:'Wed', time:800}, {day:'Wed', time:850});
+            time3 = new CourseJS.Time({day:'Fri', time:800}, {day:'Fri', time:850});
+
+            it('should create an entry with the given alias, timeSet, and info', function() {
+                var times = new CourseJS.TimeSet([time1, time2, time3]);
+                var courseInfo = new  CourseJS.CourseInfo({}, {}, {}, '', '', '');
+                expect(new CourseJS.Course('43245', times, courseInfo)).to.deepEqual({alias:'43245', times:times, courseInfo:courseInfo});
+            });
+
+            it('should throw an error if the arguments are not string, timeSet, and courseInfo', function() {
+                var times = new CourseJS.TimeSet([time1, time2, time3]);
+                var info = new CourseJS.Info();
+                expect(new CourseJS.Entry({}, 'times', 'courseInfo')).to.throw(Error);
+            });
+        });
     });
 
-    // getCourseInfo test
-    describe('#getCourseInfo()', function() {
-        //TODO: Implement Test
+    // getInfo test
+    describe('#getInfo()', function() {
+        //TODO:Implement Test
     });
 });
 
@@ -130,104 +153,108 @@ describe('TimeSet', function() {
     // constructor test
     describe('#TimeSet()', function() {
         it('should return an empty timeSet if no parameters are given', function() {
-            expect(TimeSet()).to.deepEqual({days:{Sun:[], Mon:[time1], Tue:[], Wed:[time2], Thu:[], Fri:[time3], Sat:[]}});
+            expect(new CourseJS.TimeSet()).to.deepEqual({days:{Sun:[], Mon:[time1], Tue:[], Wed:[time2], Thu:[], Fri:[time3], Sat:[]}});
         });
 
         it('should return an empty timeSet if the times given are undefined (TBA)', function() {
-            expect(TimeSet([undefined])).to.deepEqual({days:{Sun:[], Mon:[time1], Tue:[], Wed:[time2], Thu:[], Fri:[time3], Sat:[]}});
+            expect(new CourseJS.TimeSet([undefined])).to.deepEqual({days:{Sun:[], Mon:[time1], Tue:[], Wed:[time2], Thu:[], Fri:[time3], Sat:[]}});
         });
 
         it('should return normal timeSet if normal times are given', function() {
-            time1 = Time({day:'Mon', time:800}, {day:'Mon', time:850});
-            time2 = Time({day:'Wed', time:800}, {day:'Wed', time:850});
-            time3 = Time({day:'Fri', time:800}, {day:'Fri', time:850});
-            expect(TimeSet([time1, time2, time3])).to.deepEqual({days:{Sun:[], Mon:[time1], Tue:[], Wed:[time2], Thu:[], Fri:[time3], Sat:[]}});
+            var time1 = new CourseJS.Time({day:'Mon', time:800}, {day:'Mon', time:850});
+            var time2 = new CourseJS.Time({day:'Wed', time:800}, {day:'Wed', time:850});
+            var time3 = new CourseJS.Time({day:'Fri', time:800}, {day:'Fri', time:850});
+            expect(new CourseJS.TimeSet([time1, time2, time3])).to.deepEqual({days:{Sun:[], Mon:[time1], Tue:[], Wed:[time2], Thu:[], Fri:[time3], Sat:[]}});
         });
 
         it('should return normal timeSet if normal times are given', function() {
-            time1 = Time({day:'Mon', time:800}, {day:'Mon', time:900});
-            time2 = Time({day:'Mon', time:830}, {day:'Mon', time:930});
-            expect(TimeSet([time1, time2, time3])).to.deepEqual({days:{Sun:[], Mon:[time1], Tue:[], Wed:[time2], Thu:[], Fri:[time3], Sat:[]}});
+            var time1 = new CourseJS.Time({day:'Mon', time:800}, {day:'Mon', time:900});
+            var time2 = new CourseJS.Time({day:'Mon', time:830}, {day:'Mon', time:930});
+            expect(new CourseJS.TimeSet([time1, time2, time3])).to.deepEqual({days:{Sun:[], Mon:[time1], Tue:[], Wed:[time2], Thu:[], Fri:[time3], Sat:[]}});
         });
 
         it('should put a time into the day of its start if it spans over multiple days', function() {
-            time1 = Time({day:'Mon', time:1800}, {day:'Tue', time:200});
-            expect(TimeSet([time1])).to.deepEqual({days:{Sun:[], Mon:[time1], Tue:[], Wed:[], Thu:[], Fri:[], Sat:[]}});
+            var time1 = new CourseJS.Time({day:'Mon', time:1800}, {day:'Tue', time:200});
+            expect(new CourseJS.TimeSet([time1])).to.deepEqual({days:{Sun:[], Mon:[time1], Tue:[], Wed:[], Thu:[], Fri:[], Sat:[]}});
         });
 
         it('should return a normal timeSet if the objects given are times with additional properties', function() {
-            time1 = {start:{flavor:'chocolate', day:'Mon', time:800}, end:{flavor:'vanilla', day:'Mon', time:900}};
-            expect(TimeSet([time1])).to.deepEqual({days:{Sun:[], Mon:[time1], Tue:[], Wed:[], Thu:[], Fri:[], Sat:[]}});
+            var time1 = {start:{flavor:'chocolate', day:'Mon', time:800}, end:{flavor:'vanilla', day:'Mon', time:900}};
+            expect(new CourseJS.TimeSet([time1])).to.deepEqual({days:{Sun:[], Mon:[time1], Tue:[], Wed:[], Thu:[], Fri:[], Sat:[]}});
         });
 
         it('should throw an error if the given objects given are not times', function() {
-            time1 = {start:{flavor:'chocolate', quantity: 2}, end:{flavor:'vanilla', quantity:900}};
-            expect(TimeSet([time1])).to.throw(Error);
+            var time1 = new CourseJS.Time({flavor:'chocolate', quantity: 2}, {flavor:'vanilla', quantity:900});
+            expect(new CourseJS.TimeSet([time1])).to.throw(Error);
         });
     });
 
     // insert test
     describe('#insert()', function() {
         it('should insert times into a timeSet and return true', function() {
-            timeSet = TimeSet();
-            time1 = Time({day:'Mon', time:800}, {day:'Mon', time:900});
+            var timeSet = new CourseJS.TimeSet();
+            var time1 = new CourseJS.Time({day:'Mon', time:800}, {day:'Mon', time:900});
             expect(timeSet.insert(time1)).to.return(true);
             expect(timeSet).to.have.property('Mon', [time1]);
         });
 
         it('should split and insert times with multiple days into a timeSet and return true', function() {
-            timeSet = TimeSet();
-            time1 = Time({day:'Mon', time:800}, {day:'Tue', time:900});
+            var timeSet = new new CourseJs.TimeSet();
+            var time1 = new new CourseJs.Time({day:'Mon', time:800}, {day:'Tue', time:900});
             expect(timeSet.insert(time1)).to.return(true);
             expect(timeSet).to.have.property('Mon', [{day:'Mon', time:800}, {day:'Mon', time:2359}]).and.to.have.property('Tue', [{day:'Tue', time:0}, {day:'Tue', time:900}]);
         });
 
         it('should add a time to a timeSet, but return false if the same time or an overlapping time is added later', function() {
-            timeSet = TimeSet();
-            time1 = Time({day:'Mon', time:800}, {day:'Mon', time:900});
-            time1 = Time({day:'Mon', time:830}, {day:'Mon', time:930});
+            var timeSet = new CourseJS.TimeSet();
+            var time1 = new CourseJS.Time({day:'Mon', time:800}, {day:'Mon', time:900});
+            var time2 = new CourseJS.Time({day:'Mon', time:830}, {day:'Mon', time:930});
             expect(timeSet.insert(time1)).to.equal(true);
             expect(timeSet.insert(time1)).to.equal(false);
             expect(timeSet.insert(time2)).to.equal(false);
-            expect(timeSet).to.have.property('Mon', []);
+            expect(timeSet).to.have.property('Mon', [time1]);
         });
     });
 
     // getTimes test
     describe('#getTimes()', function() {
-        var times = [Time({day:'Mon', time:800}, {day:'Mon', time:900}), Time({day:'Wed', time:800}, {day:'Wed', time:900}), Time({day:'Fri', time:800}, {day:'Fri', time:900})];
-        var otherTimes = [Time({day:'Mon', time:800}, {day:'Mon', time:900}), Time({day:'Fri', time:800}, {day:'Fri', time:900})];
+        var times = [new CourseJS.Time({day:'Mon', time:800}, {day:'Mon', time:900}), new CourseJS.Time({day:'Wed', time:800}, {day:'Wed', time:900}),
+            new CourseJS.Time({day:'Fri', time:800}, {day:'Fri', time:900})];
+        var otherTimes = [new CourseJS.Time({day:'Mon', time:800}, {day:'Mon', time:900}), new CourseJS.Time({day:'Fri', time:800}, {day:'Fri', time:900})];
 
         it('should get all times from the TimeSet', function() {
-            timeSet = TimeSet(times);
-            expect(timeSet.getTimes()).to.equal(times);
+            var timeSet = new CourseJS.TimeSet(times);
+            expect(new timeSet.getTimes()).to.equal(times);
         });
 
         it('should get all times from the TimeSet on a given day', function() {
-            timeSet = TimeSet(otherTimes);
+            var timeSet = new CourseJS.TimeSet(otherTimes);
             expect(timeSet.getTimes()).to.equal([Time({day:'Wed', time:800}, {day:'Wed', time:900})]);
         });
     });
 
     // getTimesByDay test
     describe('#getTimesByDay()', function() {
-        var times = [Time({day:'Mon', time:800}, {day:'Mon', time:900}), Time({day:'Wed', time:800}, {day:'Wed', time:900}), Time({day:'Fri', time:800}, {day:'Fri', time:900})];
-        var otherTimes = [Time({day:'Mon', time:800}, {day:'Mon', time:900}), Time({day:'Fri', time:800}, {day:'Fri', time:900})];
+        var times = [new CourseJS.Time({day:'Mon', time:800}, {day:'Mon', time:900}),
+            new CourseJS.Time({day:'Wed', time:800}, {day:'Wed', time:900}),
+            new CourseJS.Time({day:'Fri', time:800}, {day:'Fri', time:900})];
+        var otherTimes = [new CourseJS.Time({day:'Mon', time:800}, {day:'Mon', time:900}),
+            new CourseJS.Time({day:'Fri', time:800}, {day:'Fri', time:900})];
 
         it('should get all times from the TimeSet that do not overlap with the restriction TimeSet', function() {
-            timeSet = TimeSet(times);
-            expect(timeSet.getTimesByDay('Mon')).to.equal([Time({day:'Mon', time:800}, {day:'Mon', time:900})]);
+            var timeSet = new CourseJS.TimeSet(times);
+            expect(timeSet.getTimesByDay('Mon')).to.equal([new CourseJS.Time({day:'Mon', time:800}, {day:'Mon', time:900})]);
         });
 
         It('should get all times from the TimeSet on a given day that do not overlap with the restriction TimeSet', function() {
-            timeSet = TimeSet(times);
+            var timeSet = new CourseJS.TimeSet(times);
         });
     });
 
     // getTBA test
     describe('#getTBA()', function() {
         it('should ', function() {
-            expect(getTBA()).to.deepEqual({days:{Sun:[], Mon:[time1], Tue:[], Wed:[], Thu:[], Fri:[], Sat:[]}});
+            expect(new CourseJS.TimeSet.getTBA()).to.deepEqual({days:{Sun:[], Mon:[time1], Tue:[], Wed:[], Thu:[], Fri:[], Sat:[]}});
         });
     });
 });
@@ -241,93 +268,82 @@ describe('Time', function() {
         it('should instantiate a time with a start property and end property', function() {
             var start = {day:'Mon', time:800};
             var end = {day:'Mon', time:900};
-            expect(Time(start, end)).to.deepEqual({start:start, end:end});
-        });
-
-        it('should throw an undefined time when the start or end are undefined', function() {
-            expect(Time()).equal(undefined);
+            expect(new CourseJS.Time(start, end)).to.deepEqual({start:start, end:end});
         });
 
         it('should throw an error when start and end are the same moment', function() {
             var start = {day:'Mon', time:0};
             var end = {day:'Mon', time:0};
-            expect(Time(start, end)).to.throw(Error);
+            expect(new CourseJS.Time(start, end)).to.throw(Error);
         });
 
         it('should instantiate a time as normal', function() {
             var start = {name:'walrus', day:'Mon', time:800 , age:7};
             var end = {name:'narwhal', day:'Mon', time:900, age:'infinity'};
-            expect(Time(start, end)).to.not.throw(Error);
+            expect(new CourseJS.Time(start, end)).to.not.throw(Error);
         });
 
         it('should throw an error when start and end are not moment objects', function() {
             var start = {name:'walrus', age:7};
             var end = {name:'narwhal', age:'infinity'};
-            expect(Time(start, end)).to.throw(Error);
+            expect(new CourseJS.Time(start, end)).to.throw(Error);
         });
 
         it('should throw an error when start or end do not have military time numbers', function() {
             var start = {day:'Mon', time:890};
             var end = {day:'Mon', time:900};
-            expect(Time(start, end)).to.throw(Error);
+            expect(new CourseJS.Time(start, end)).to.throw(Error);
         });
 
         it('should throw an error when start or end do not have military time numbers', function() {
             var start = {day:'Mon', time:800};
             var end = {day:'Mon', time:2400};
-            expect(Time(start, end)).to.throw(Error);
+            expect(new CourseJS.Time(start, end)).to.throw(Error);
         });
 
         it('should throw an error when start or end are not real days', function() {
             var start = {day:'Man', time:800};
             var end = {day:'Tuo', time:900};
-            expect(Time(start, end)).to.throw(Error);
+            expect(new CourseJS.Time(start, end)).to.throw(Error);
         });
     });
 
     // getOverlap test
     describe('#getOverlap()', function() {
         it('should return the overlapping time between two times', function() {
-            var time1 = Time({day:'Mon', time:0}, {day:'Tue', time:0});
-            var time2 = Time({day:'Mon', time:1200}, {day:'Tue', time:1200});
+            var time1 = new CourseJS.Time({day:'Mon', time:0}, {day:'Tue', time:0});
+            var time2 = new CourseJS.Time({day:'Mon', time:1200}, {day:'Tue', time:1200});
             expect(time1.getOverlap(time2)).deepEqual({start:{day:'Mon', time:1200}, end:{day:'Tue', time:0}});
         });
 
         it('should return the overlapping time between two times', function() {
-            var time1 = Time({day:'Mon', time:0}, {day:'Tue', time:0});
-            var time2 = Time({day:'Mon', time:1200}, {day:'Tue', time:1200});
+            var time1 = new CourseJS.Time({day:'Mon', time:0}, {day:'Tue', time:0});
+            var time2 = new CourseJS.Time({day:'Mon', time:1200}, {day:'Tue', time:1200});
             expect(time1.getOverlap(time2)).deepEqual({start:{day:'Mon', time:1200}, end:{day:'Tue', time:0}});
         });
 
         it('should return the overlapping time between two times', function() {
-            var time1 = Time({day:'Mon', time:0}, {day:'Tue', time:0});
-            var time2 = Time({day:'Mon', time:1200}, {day:'Tue', time:1200});
+            var time1 = new CourseJS.Time({day:'Mon', time:0}, {day:'Tue', time:0});
+            var time2 = new CourseJS.Time({day:'Mon', time:1200}, {day:'Tue', time:1200});
             expect(time1.getOverlap(time2)).deepEqual({start:{day:'Mon', time:1200}, end:{day:'Tue', time:0}});
         });
 
         it('should return one time if it is between the start and end of the other', function() {
-            var time1 = Time({day:'Mon', time:0}, {day:'Fri', time:0});
-            var time2 = Time({day:'Tue', time:0}, {day:'Wed', time:0});
+            var time1 = new CourseJS.Time({day:'Mon', time:0}, {day:'Fri', time:0});
+            var time2 = new CourseJS.Time({day:'Tue', time:0}, {day:'Wed', time:0});
             expect(time1.getOverlap(time2)).to.deepEqual(time2);
         });
 
         it('should return an empty object for times that do no not overlap', function() {
-            var time1 = Time({day:'Tue', time:800}, {day:'Tue', time:1000});
-            var time2 = Time({day:'Mon', time:900}, {day:'Mon', time:1100});
+            var time1 = new CourseJS.Time({day:'Tue', time:800}, {day:'Tue', time:1000});
+            var time2 = new CourseJS.Time({day:'Mon', time:900}, {day:'Mon', time:1100});
             expect(time1.getOverlap(time2)).equal({});
         });
 
         it('should return an empty object for times that do no not overlap', function() {
-            var time1 = Time({day:'Sat', time:0}, {day:'Sat', time:1000});
-            var time2 = Time({day:'Sat', time:1000}, {day:'Sat', time:2000});
+            var time1 = new CourseJS.Time({day:'Sat', time:0}, {day:'Sat', time:1000});
+            var time2 = new CourseJS.Time({day:'Sat', time:1000}, {day:'Sat', time:2000});
             expect(time1.getOverlap(time2)).equal({});
-        });
-    });
-
-    // getTBA test
-    describe('#getTBA()', function() {
-        it('should return an undefined time', function() {
-            expect(getTBA()).equal(undefined);
         });
     });
 });
@@ -337,31 +353,58 @@ describe('Info', function() {
 
     // constructor test
     describe('#Info()', function() {
-        //TODO: Implement Test
-    });
+        it('should create an Info object with the given properties', function() {
+            var searchable = {};
+            var regular = {};
+            var hidden = {};
+            expect(new CourseJS.Info(searchabe, regular, hidden)).to.deepEqual({searcable:searchable, regular:regular, hidden:hidden});
+        });
 
-    // toString test
-    describe('#toString()', function() {
-        //TODO: Implement Test
+        it('should throw an error if the searchable, regular, or hidden properties are not objects', function() {
+            var searchable = '';
+            var regular = 6;
+            var hidden;
+            expect(new CourseJS.Info(searchabe, regular, hidden)).to.throw(Error);
+        });
     });
 });
 
 // CourseInfo test
 describe('CourseInfo', function() {
 
+    var searchable = {};
+    var regular = {};
+    var hidden = {};
+    var number = "360";
+    var section = '32450';
+    var subject = 'math';
+
     // constructor test
     describe('#CourseInfo()', function() {
-        //TODO: Implement Test
+
+        it('should create a CourseInfo object with the given properties', function() {
+            var courseInfo = new CourseJS.CourseInfo(searchabe, regular, hidden, number, section, subject);
+            expect(courseInfo).to.deepEqual({searcable:searchable, regular:regular, hidden:hidden,
+                number:number, section:section, subject:subject});
+        });
+
+        it('should throw an error if the searchable, regular, or hidden properties are not objects', function() {
+
+            expect(new CourseJS.CourseInfo(searchabe, regular, hidden, number, section, subject)).to.throw(Error);
+        });
+
+        it('should throw an error if the number, section, or subject properties are not strings', function() {
+            expect(new CourseJS.CourseInfo(searchabe, regular, hidden, {}, 6, [])).to.throw(Error);
+        });
     });
 
     // getNonCourseInfo test
     describe('#getNonCourseInfo()', function() {
-        //TODO: Implement Test
-    });
 
-    // toString test
-    describe('#toString()', function() {
-        //TODO: Implement Test
+        it('should create a info object with the non course specific info of a courseInfo object', function() {
+            var courseInfo = new CourseJS.CourseInfo(searchabe, regular, hidden, number, section, subject);
+            expect(courseInfo.getNonCourseInfo).to.deepEqual({searcable:searchable, regular:regular, hidden:hidden});
+        });
     });
 });
 

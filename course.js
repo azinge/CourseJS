@@ -176,7 +176,9 @@ CourseJS.Schedule = class Schedule {
      * @param {Array<Entry|EntryGroup>} items The items making up the schedule.
      */
     constructor (owner, title, items) {
-        //TODO: Implement Constructor
+        this.owner = owner;
+        this.title = title;
+        this.items = items;
     }
 
     /**
@@ -238,10 +240,16 @@ CourseJS.TimeSet = class TimeSet {
      */
     constructor (times) {
         this.days = {Sun: [], Mon: [], Tue: [], Wed: [], Thu: [], Fri: [], Sat: []};
-        //TODO: Implement Constructor
+        for (i = 0; i < times.length; i++) {
+            this.insert(times[i]);
+        }
         //If no params, TBA TimeSet
     }
 
+    getNextDay(day) {
+        dayArray = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+        return dayArray[dayArray.indexOfday(day)+1];
+    }
     /**
      * Inserts a time into the time set.
      * Will split times crossing midnight into multiple separate times.
@@ -249,7 +257,22 @@ CourseJS.TimeSet = class TimeSet {
      * @return {boolean} Value representing whether the time was successfully added.
      */
     insert (time) {
-        //TODO: Implement Function
+        while (time.start.day !== time.end.day) {
+            this.TimeSet.insert(new Time(time.start, {day: time.start.day, time:2359}));
+            time.start = {day: (CourseJS.TimeSet.getNextDay(time.start.day)), time:0};
+        }
+        if (this.TimeSet.days[time.start.day].length === 0) {
+            this.TimeSet.days[time.start.day].push(times[i].start.day);
+            return true;
+        } else {
+            for (i = 0; i < this.TimeSet.days[time.start.day].length; i++){
+                if (time.getOverlap(this.TimeSet.days[time.start.day][i]) !== Time()) {
+                    return false;
+                }
+            }
+            this.TimeSet.days[time.start.day].push(times[i].start.day);
+            return true;
+        }
     }
 
     /**
@@ -327,7 +350,29 @@ CourseJS.Time = class Time {
      * @return {Time} time The time where the two times overlap.
      */
     getOverlap (time) {
-        //TODO: Implement Function
+        var startTime = this.start.time;
+        var endTime = this.end.time;
+        var otherStartTime = time.start.time;
+        var otherEndTime = time.end.time;
+
+        if (startTime < otherStartTime && otherStartTime < endTime) {
+            if(otherEndTime<endTime || otherEndTime === endTime) {
+                return (new Time(otherStartTime, otherEndTime));
+            } else return (new Time(otherStartTime, endTime));
+        } else if (otherStartTime < startTime && startTime < otherEndTime) {
+            if(endTime<otherEndTime || endTime === otherEndTime) {
+                return (new Time(startTime, endTime));
+            } else return(new Time(startTime, otherEndTime))
+        }
+
+        return Time();
+    }
+
+    /**
+     * Gets a TBA object
+     */
+    get TBA () {
+        return TimeSet();
     }
 };
 

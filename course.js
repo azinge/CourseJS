@@ -176,7 +176,9 @@ CourseJS.Schedule = class Schedule {
      * @param {Array<Entry|EntryGroup>} items The items making up the schedule.
      */
     constructor (owner, title, items) {
-        //TODO: Implement Constructor
+        this.owner = owner;
+        this.title = title;
+        this.items = items;
     }
 
     /**
@@ -237,11 +239,17 @@ CourseJS.TimeSet = class TimeSet {
      * @param {Array<Time>|undefined} times An array of times comprising the time set.
      */
     constructor (times) {
-        this.days = {Su: [], M: [], T: [], W: [], R: [], F: [], S: []};
-        //TODO: Implement Constructor
+        this.days = {Sun: [], Mon: [], Tue: [], Wed: [], Thu: [], Fri: [], Sat: []};
+        for (i = 0; i < times.length; i++) {
+            this.insert(times[i]);
+        }
         //If no params, TBA TimeSet
     }
 
+    getNextDay(day) {
+        dayArray = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+        return dayArray[dayArray.indexOfday(day)+1];
+    }
     /**
      * Inserts a time into the time set.
      * Will split times crossing midnight into multiple separate times.
@@ -249,7 +257,22 @@ CourseJS.TimeSet = class TimeSet {
      * @return {boolean} Value representing whether the time was successfully added.
      */
     insert (time) {
-        //TODO: Implement Function
+        while (time.start.day !== time.end.day) {
+            this.TimeSet.insert(new Time(time.start, {day: time.start.day, time:2359}));
+            time.start = {day: (CourseJS.TimeSet.getNextDay(time.start.day)), time:0};
+        }
+        if (this.TimeSet.days[time.start.day].length === 0) {
+            this.TimeSet.days[time.start.day].push(times[i].start.day);
+            return true;
+        } else {
+            for (i = 0; i < this.TimeSet.days[time.start.day].length; i++){
+                if (time.getOverlap(this.TimeSet.days[time.start.day][i]) !== Time()) {
+                    return false;
+                } 
+            }
+            this.TimeSet.days[time.start.day].push(times[i].start.day);
+            return true;
+        }
     }
 
     /**
@@ -301,15 +324,21 @@ CourseJS.Time = class Time {
      * @return {Time} The time where the two times overlap.
      */
     getOverlap (time) {
-        if (this.start < time.start && time.start < this.end) {
-            if(time.end<this.end || time.end === this.end) {
-                return (new Time(time.start, time.end)); 
-            } else return (new Time(time.start, this.end));
-        } else if (time.start < this.start && this.start < time.end) {
-            if(this.end<time.end || this.end === time.end) {
-                return (new Time(this.start, this.end));
-            } else return(new Time(this.start, time.end))
+        var startTime = this.start.time;
+        var endTime = this.end.time;
+        var otherStartTime = time.start.time;
+        var otherEndTime = time.end.time;
+
+        if (startTime < otherStartTime && otherStartTime < endTime) {
+            if(otherEndTime<endTime || otherEndTime === endTime) {
+                return (new Time(otherStartTime, otherEndTime)); 
+            } else return (new Time(otherStartTime, endTime));
+        } else if (otherStartTime < startTime && startTime < otherEndTime) {
+            if(endTime<otherEndTime || endTime === otherEndTime) {
+                return (new Time(startTime, endTime));
+            } else return(new Time(startTime, otherEndTime))
         }
+
         return Time();
     }
 

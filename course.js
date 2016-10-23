@@ -26,7 +26,17 @@ CourseJS.Entry = class Entry {
      * @return {TimeSet|undefined} A time set with the overlapping times between the two entries.
      */
     getOverlappingTimeSet (entry) {
-        //TODO: Implement Function
+        var theseTimes = this.times.getTimes();
+        var entryTimes = entry.times.getTimes();
+        var newTimeSet = TimeSet();
+
+        for (i = 0; i < theseTimes.length; i++) {
+            for (j = 0; j < entryTimes.length; j++) {
+                if (entryTimes[j].getOverlap(theseTimes[i]) !== Time()) {
+                    newTimeSet.insert(entryTimes[j].getOverlap(theseTimes[i]));
+                }
+            };
+        }
     }
 
     /**
@@ -34,7 +44,8 @@ CourseJS.Entry = class Entry {
      * @return {Info} This entry's info property.
      */
     getInfo () {
-        //TODO: Implement Function
+        var copyInfo = Object.assign({}, this.info);
+        return copyInfo;
     }
 };
 
@@ -281,7 +292,11 @@ CourseJS.TimeSet = class TimeSet {
      * @return {Array<Time>} An array of all of the times making up the time set.
      */
     getTimes (restriction) {
-        //TODO: Implement Function
+        var allTimes = [];
+        for (var property in this.days) {
+            allTimes.concat(property);
+        }
+        return allTimes;
     }
 
     /**
@@ -291,7 +306,7 @@ CourseJS.TimeSet = class TimeSet {
      * @return {Array<Time>} An array of all of the times making up the time set on a certain day.
      */
     getTimesByDay (day, restriction) {
-        //TODO: Implement Function
+        return this.days(day).slice(0);
     }
 
     /**

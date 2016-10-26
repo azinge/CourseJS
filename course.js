@@ -251,14 +251,14 @@ CourseJS.TimeSet = class TimeSet {
      */
     constructor (times) {
         this.days = {Sun: [], Mon: [], Tue: [], Wed: [], Thu: [], Fri: [], Sat: []};
-        for (i = 0; i < times.length; i++) {
+        for (var i = 0; i < times.length; i++) {
             this.insert(times[i]);
         }
         //If no params, TBA TimeSet
     }
 
     getNextDay(day) {
-        dayArray = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+        var dayArray = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
         return dayArray[dayArray.indexOfday(day)+1];
     }
     /**
@@ -269,11 +269,11 @@ CourseJS.TimeSet = class TimeSet {
      */
     insert (time) {
         while (time.start.day !== time.end.day) {
-            this.TimeSet.insert(new Time(time.start, {day: time.start.day, time:2359}));
+            this.insert(new CourseJS.Time(time.start, {day: time.start.day, time:2359}));
             time.start = {day: (CourseJS.TimeSet.getNextDay(time.start.day)), time:0};
         }
-        if (this.TimeSet.days[time.start.day].length === 0) {
-            this.TimeSet.days[time.start.day].push(times[i].start.day);
+        if (this.days[time.start.day].length === 0) {
+            this.days[time.start.day].push(time[i].start.day);
             return true;
         } else {
             for (i = 0; i < this.TimeSet.days[time.start.day].length; i++){
@@ -331,26 +331,26 @@ CourseJS.Time = class Time {
     constructor (start, end) {
 
         // throw an error if start or end are not Moments
-        if (typeof start != 'object' || !start.day || !start.time ||
-                typeof end != 'object' || !end.day || !end.time) {
-            throw "error in Time constructor: start and end must be of type Moment";
+        if (typeof start != 'object' || !start.day || (!start.time && start.time !== 0) ||
+                typeof end != 'object' || !end.day || (!end.time && end.time !== 0)) {
+            throw new Error("error in Time constructor: start and end must be of type Moment");
         }
 
         // throw error if start and end are the same Moment
         else if (start.day === end.day && start.time === end.time) {
-            throw "error in Time constructor: start and end cannot be the same Moment";
+            throw new Error("error in Time constructor: start and end cannot be the same Moment");
         }
 
         // throw error if start or end have incorrect numbers represeting a military time
         else if (start.time >= 2400 || start.time < 0 || start.time % 100 >= 60 || start.time % 1 !== 0 ||
                 end.time >= 2400 || end.time < 0 || end.time % 100 >= 60 || end.time % 1 !== 0) {
-            throw "error in Time constructor: start and end must have military times for their times";
+            throw new Error("error in Time constructor: start and end must have military times for their times");
         }
 
         // throw error if start or end have strings that aren't real days
-        else if (start.day !== 'Sun' || start.day !== 'Mon' || start.day !== 'Tue' || start.day !== 'Wed' || start.day !== 'Thu' || start.day !== 'Fri' || start.day !== 'Sat' ||
-                end.day !== 'Sun' || end.day !== 'Mon' || end.day !== 'Tue' || end.day !== 'Wed' || end.day !== 'Thu' || end.day !== 'Fri' || end.day !== 'Sat') {
-            throw "error in Time constructor: days must be one of the following {Sun, Mon, Tue, Wed, Thu, Fri, Sat, Sun}";
+        else if ((start.day !== 'Sun' && start.day !== 'Mon' && start.day !== 'Tue' && start.day !== 'Wed' && start.day !== 'Thu' && start.day !== 'Fri' && start.day !== 'Sat') ||
+                (end.day !== 'Sun' && end.day !== 'Mon' && end.day !== 'Tue' && end.day !== 'Wed' && end.day !== 'Thu' && end.day !== 'Fri' && end.day !== 'Sat')) {
+            throw new Error("error in Time constructor: days must be one of the following {Sun, Mon, Tue, Wed, Thu, Fri, Sat, Sun}");
         }
 
         else {
@@ -377,17 +377,17 @@ CourseJS.Time = class Time {
         } else if (otherStartTime < startTime && startTime < otherEndTime) {
             if(endTime<otherEndTime || endTime === otherEndTime) {
                 return (new Time(startTime, endTime));
-            } else return(new Time(startTime, otherEndTime))
+            } else return(new Time(startTime, otherEndTime));
         }
 
-        return Time();
+        return new Time();
     }
 
     /**
      * Gets a TBA object
      */
     get TBA () {
-        return TimeSet();
+        return Time();
     }
 };
 

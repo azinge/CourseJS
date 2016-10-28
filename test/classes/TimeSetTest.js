@@ -7,22 +7,22 @@ describe('TimeSet', function() {
 
     // constructor test
     describe('#TimeSet()', function() {
-        it('should return an empty timeSet if no parameters are given', function() {
+        it('should create an empty timeSet if no parameters are given', function() {
             assert.deepEqual(new CourseJS.TimeSet(), {days:{Sun:[], Mon:[time1], Tue:[], Wed:[time2], Thu:[], Fri:[time3], Sat:[]}});
         });
 
-        it('should return an empty timeSet if the times given are undefined (TBA)', function() {
+        it('should create an empty timeSet if the times given are undefined (TBA)', function() {
             assert.deepEqual(new CourseJS.TimeSet([undefined]), {days:{Sun:[], Mon:[time1], Tue:[], Wed:[time2], Thu:[], Fri:[time3], Sat:[]}});
         });
 
-        it('should return normal timeSet if normal times are given', function() {
+        it('should create a timeSet if valid times are given', function() {
             var time1 = new CourseJS.Time({day:'Mon', time:800}, {day:'Mon', time:850});
             var time2 = new CourseJS.Time({day:'Wed', time:800}, {day:'Wed', time:850});
             var time3 = new CourseJS.Time({day:'Fri', time:800}, {day:'Fri', time:850});
             assert.deepEqual(new CourseJS.TimeSet([time1, time2, time3]), {days:{Sun:[], Mon:[time1], Tue:[], Wed:[time2], Thu:[], Fri:[time3], Sat:[]}});
         });
 
-        it('should return normal timeSet if normal times are given', function() {
+        it('should create a timeSet if valid times are given', function() {
             var time1 = new CourseJS.Time({day:'Mon', time:800}, {day:'Mon', time:900});
             var time2 = new CourseJS.Time({day:'Mon', time:830}, {day:'Mon', time:930});
             assert.deepEqual(new CourseJS.TimeSet([time1, time2, time3]), {days:{Sun:[], Mon:[time1], Tue:[], Wed:[time2], Thu:[], Fri:[time3], Sat:[]}});
@@ -33,7 +33,7 @@ describe('TimeSet', function() {
             assert.deepEqual(new CourseJS.TimeSet([time1]), {days:{Sun:[], Mon:[time1], Tue:[], Wed:[], Thu:[], Fri:[], Sat:[]}});
         });
 
-        it('should return a normal timeSet if the objects given are times with additional properties', function() {
+        it('should create a timeSet if the objects given are times with additional properties', function() {
             var time1 = {start:{flavor:'chocolate', day:'Mon', time:800}, end:{flavor:'vanilla', day:'Mon', time:900}};
             assert.deepEqual(new CourseJS.TimeSet([time1]), {days:{Sun:[], Mon:[time1], Tue:[], Wed:[], Thu:[], Fri:[], Sat:[]}});
         });

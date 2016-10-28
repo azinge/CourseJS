@@ -94,6 +94,10 @@ CourseJS.EntryGroup = class EntryGroup {
      * @param {String|undefined} title Name of the entry group.
      */
     constructor (entries, title) {
+        if (!entries || !title) {
+            throw new Error("Error in EntryGroup constructor: use the format EntryGroup(Array<Entry>, string)");
+        }
+
         if (entries.constructor != Array || typeof title != 'string') {
             throw new Error("Error in EntryGroup constructor: use the format EntryGroup(Array<Entry>, string)");
         }
@@ -116,7 +120,18 @@ CourseJS.EntryGroup = class EntryGroup {
      * @return {boolean} Value representing whether the entry was successfully able to be added.
      */
     insert (entry) {
-        //TODO: Implement Function
+        if (!entry || instanceof entry != CourseJS.Entry) {
+            return false;
+        }
+
+        for (var i = 0; i < entries.length; i++) {
+            if (entry.alias === entries[i].alias) {
+                return false;
+            }
+        }
+
+        entries[entries.length] = entry;
+        return true;
     }
 
     /**
@@ -125,7 +140,18 @@ CourseJS.EntryGroup = class EntryGroup {
      * @return {boolean} Value representing whether the entry was successfully able to be selected.
      */
     select (entry) {
-        //TODO: Implement Function
+        if (!entry || instanceof entry != CourseJS.Entry) {
+            return false;
+        }
+
+        for (var i = 0; i < this.entries.length; i++) {
+            if (entry.alias === entries[i].alias) {
+                selected = i;
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -133,7 +159,14 @@ CourseJS.EntryGroup = class EntryGroup {
      * @param {Array<Entry>} entries Array of entries to be activated.
      */
     activate (entries) {
-        //TODO: Implement Function
+        for (var i = 0; i < entries.length; i++) {
+            for (var j = 0; j < this.entries.length; j++) {
+                if (entries[i].alias === this.entries[j].alias) {
+                    deactivate(entries[i]);
+                    active.push(j);
+                }
+            }
+        }
     }
 
     /**
@@ -141,7 +174,13 @@ CourseJS.EntryGroup = class EntryGroup {
      * @param {Array<Entry>} entries Array of entries to be deactivated.
      */
     deactivate (entries) {
-        //TODO: Implement Function
+        for (var i = 0; i < entries.length; i++) {
+            for (var j = 0; j < active.length; j++) {
+                if (entries[i].alias === this.entries[j].alias) {
+                    active.splice(j, 1);
+                }
+            }
+        }
     }
 
     /**
@@ -149,7 +188,7 @@ CourseJS.EntryGroup = class EntryGroup {
      * @return {Entry|undefined} This entry group's selected entry.
      */
     getSelectedEntry () {
-        //TODO: Implement Function
+        return entries[selected];
     }
 
     /**
@@ -157,7 +196,7 @@ CourseJS.EntryGroup = class EntryGroup {
      * @return {Array<Entry>|undefined} Array of activated entries in this entry group.
      */
     getActivatedEntries () {
-        //TODO: Implement Function
+        return active;
     }
 
     /**

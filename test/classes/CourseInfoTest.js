@@ -27,7 +27,9 @@ describe('CourseInfo', function() {
         });
 
         it('should throw an error if the number, section, or subject properties are not strings', function() {
-            expect(function() {new CourseJS.CourseInfo(searchabe, regular, hidden, {}, 6, []));}).to.throw(Error);
+            expect(function() {new CourseJS.CourseInfo(searchabe, regular, hidden, {}, "section", "subject");}).to.throw(Error);
+            expect(function() {new CourseJS.CourseInfo(searchabe, regular, hidden, "number", 6, "subject");}).to.throw(Error);
+            expect(function() {new CourseJS.CourseInfo(searchabe, regular, hidden, "number", "section", []);}).to.throw(Error);
         });
     });
 

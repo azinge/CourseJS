@@ -15,6 +15,10 @@ CourseJS.Entry = class Entry {
      * @param {Info} info An Info property that lists extra information about the particular entry.
      */
     constructor (alias, times, info) {
+        if (typeof alias != 'string' || times instanceof CourseJS.TimeSet || info instanceof CourseJS.Info) {
+            throw new Error("Error in Entry constructor: please use the format Entry(String, TimeSet, Info)");
+        }
+
         this.alias = alias;
         this.times = times;
         this.info = info;
@@ -30,12 +34,12 @@ CourseJS.Entry = class Entry {
         var entryTimes = entry.times.getTimes();
         var newTimeSet = TimeSet();
 
-        for (i = 0; i < theseTimes.length; i++) {
-            for (j = 0; j < entryTimes.length; j++) {
-                if (entryTimes[j].getOverlap(theseTimes[i]) !== Time()) {
+        for (var i = 0; i < theseTimes.length; i++) {
+            for (var j = 0; j < entryTimes.length; j++) {
+                if (entryTimes[j].getOverlap(theseTimes[i]) !== CourseJS.Time()) {
                     newTimeSet.insert(entryTimes[j].getOverlap(theseTimes[i]));
                 }
-            };
+            }
         }
     }
 
@@ -90,6 +94,16 @@ CourseJS.EntryGroup = class EntryGroup {
      * @param {String|undefined} title Name of the entry group.
      */
     constructor (entries, title) {
+        if (entries.constructor != Array || typeof title != 'string') {
+            throw new Error("Error in EntryGroup constructor: use the format EntryGroup(Array<Entry>, string)");
+        }
+
+        for (int i = 0; i < entries.length; i++) {
+            if (instanceof entries[i] != CourseJS.Entry) {
+                throw new Error("Error in EntryGroup constructor: use the format EntryGroup(Array<Entry>, string)");
+            }
+        }
+
         this.entries = entries;
         this.title = title;
         this.selected = -1;
@@ -251,10 +265,21 @@ CourseJS.TimeSet = class TimeSet {
      */
     constructor (times) {
         this.days = {Sun: [], Mon: [], Tue: [], Wed: [], Thu: [], Fri: [], Sat: []};
+
+        if (times == undefined) {
+            return;
+        }
+
+        if (typeof times.constructor != Array) {
+            throw new Error("Error in TimeSet Constructor: please use format TimeSet(Array<Time>)");
+        }
+
         for (var i = 0; i < times.length; i++) {
+            if (!(times[i] instanceof CourseJS.Time)) {
+                throw new Error("Error in TimeSet Constructor: please use format TimeSet(Array<Time>)");
+            }
             this.insert(times[i]);
         }
-        //If no params, TBA TimeSet
     }
 
     getNextDay(day) {
@@ -329,6 +354,11 @@ CourseJS.Time = class Time {
      * @param {Moment} end The moment this time ends.
      */
     constructor (start, end) {
+        // create a TBA timeSet if no params given
+        if (!start && !end) {
+            this = {};
+            return;
+        }
 
         // throw an error if start or end are not Moments
         if (typeof start != 'object' || !start.day || (!start.time && start.time !== 0) ||
@@ -438,6 +468,7 @@ CourseJS.CourseInfo = class CourseInfo extends CourseJS.Info {
         if (typeof number !== 'string' || typeof section !== 'string' || typeof subject !== 'string') {
             throw "error in CourseInfo constructor: input for number, section, and subject should be strings";
         }
+
         super(searchable, regular, hidden);
         this.number = number;
         this.section = section;

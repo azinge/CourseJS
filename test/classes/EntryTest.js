@@ -19,7 +19,10 @@ describe('Entry', function() {
 
         it('should throw an error if the arguments are not string, timeSet, and info', function() {
             var times = new CourseJS.TimeSet([time1, time2, time3]);
-            expect(function() {new CourseJS.Entry({}, 5, 'info');}).to.throw(Error);
+            var info = new CourseJS.Info({}, {}, {});
+            expect(function() {new CourseJS.Entry({}, times, info);}).to.throw(Error);
+            expect(function() {new CourseJS.Entry('Alias', 5, info);}).to.throw(Error);
+            expect(function() {new CourseJS.Entry('Alias', times, 'info');}).to.throw(Error);
         });
     });
 

@@ -15,6 +15,10 @@ describe('Time', function() {
             assert.deepEqual(time, {start:start, end:end});
         });
 
+        it('should create a TBA time if no parameters are given', function() {
+            assert.deepEqual(new CourseJS.Time(), {});
+        });
+
         it('should throw an error when start and end are the same moment', function() {
             var start = {day:'Mon', time:0};
             var end = {day:'Mon', time:0};
@@ -88,6 +92,13 @@ describe('Time', function() {
             var time1 = new CourseJS.Time({day:'Sat', time:0}, {day:'Sat', time:1000});
             var time2 = new CourseJS.Time({day:'Sat', time:1000}, {day:'Sat', time:2000});
             expect(time1.getOverlap(time2)).equal({});
+        });
+    });
+
+    // get TBA Test
+    describe('#get TBA()', function() {
+        it('should return an empty Time object', function() {
+            assert.deepEqual(CourseJS.Time.get TBA(), {});
         });
     });
 });

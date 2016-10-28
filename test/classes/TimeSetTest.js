@@ -69,48 +69,66 @@ describe('TimeSet', function() {
             expect(timeSet.insert(time2)).to.equal(false);
             expect(timeSet).to.have.property('Mon', [time1]);
         });
+
+        it('should not throw an error if a TBA time object is given, and should return true', function() {
+            var timeSet = new CourseJS.TimeSet();
+            var time1 = new CourseJS.Time.get TBA();
+            expect(timeSet.insert(time1)).to.not.throw(Error).and.to.equal(true);
+            assert.deepEqual(timeSet, new CourseJS.TimeSet());
+        });
+
+        it('should throw an error if the parameter given is not a Time object', function() {
+            var timeSet = new CourseJS.TimeSet();
+            var time1 = new CourseJS.Time({day:'Mon', time:800}, {day:'Mon', time:900});
+            expect(timeSet.insert(time1)).to.equal(true);
+            expect(timeSet).to.have.property('Mon', [time1]);
+        });
     });
 
     // getTimes test
     describe('#getTimes()', function() {
-        var times = [new CourseJS.Time({day:'Mon', time:800}, {day:'Mon', time:900}), new CourseJS.Time({day:'Wed', time:800}, {day:'Wed', time:900}),
-            new CourseJS.Time({day:'Fri', time:800}, {day:'Fri', time:900})];
-        var otherTimes = [new CourseJS.Time({day:'Mon', time:800}, {day:'Mon', time:900}), new CourseJS.Time({day:'Fri', time:800}, {day:'Fri', time:900})];
+        var time1 = new CourseJS.Time({day:'Mon', time:800}, {day:'Mon', time:900});
+        var time2 = new CourseJS.Time({day:'Wed', time:800}, {day:'Wed', time:900});
+        var time3 = new CourseJS.Time({day:'Fri', time:800}, {day:'Fri', time:900});
+        var times = [time1, time2, time3];
+        var otherTimes = [time1, time3];
 
         it('should get all times from the TimeSet', function() {
             var timeSet = new CourseJS.TimeSet(times);
             assert.deepEqual(new timeSet.getTimes(), times);
         });
 
-        it('should get all times from the TimeSet on a given day', function() {
-            var timeSet = new CourseJS.TimeSet(otherTimes);
-            assert.deepEqual(timeSet.getTimes(), [Time({day:'Wed', time:800}, {day:'Wed', time:900})]);
+        it('should get all times from the TimeSet that do not overlap with the parameter timeSet', function() {
+            var timeSet1 = new CourseJS.TimeSet(times);
+            var timeSet2 = new CourseJS.TimeSet(otherTimes);
+            assert.deepEqual(timeSet1.getTimes(timeSet2), [time2]);
         });
     });
 
     // getTimesByDay test
     describe('#getTimesByDay()', function() {
-        var times = [new CourseJS.Time({day:'Mon', time:800}, {day:'Mon', time:900}),
-            new CourseJS.Time({day:'Wed', time:800}, {day:'Wed', time:900}),
-            new CourseJS.Time({day:'Fri', time:800}, {day:'Fri', time:900})];
-        var otherTimes = [new CourseJS.Time({day:'Mon', time:800}, {day:'Mon', time:900}),
-            new CourseJS.Time({day:'Fri', time:800}, {day:'Fri', time:900})];
+        var time1 = new CourseJS.Time({day:'Mon', time:800}, {day:'Mon', time:900});
+        var time2 = new CourseJS.Time({day:'Wed', time:800}, {day:'Wed', time:900});
+        var time3 = new CourseJS.Time({day:'Fri', time:800}, {day:'Fri', time:900});
+        var times = [time1, time2, time3];
+        var timeSet = new CourseJS.TimeSet(times);
+        var otherTimes = [time1, time3];
+        var otherTimeSet = new CourseJS.TimeSet(otherTimes);
+
 
         it('should get all times from the TimeSet that do not overlap with the restriction TimeSet', function() {
-            var timeSet = new CourseJS.TimeSet(times);
-            assert.deepEqual(timeSet.getTimesByDay('Mon'), [new CourseJS.Time({day:'Mon', time:800}, {day:'Mon', time:900})]);
+            assert.deepEqual(timeSet.getTimesByDay('Mon'), [time1]);
         });
 
         it('should get all times from the TimeSet on a given day that do not overlap with the restriction TimeSet', function() {
-            var timeSet = new CourseJS.TimeSet(times);
-            assert.deepEqual(timeSet.getTimesByDay('Mon', otherTimes), []);
+            assert.deepEqual(timeSet.getTimesByDay('Mon', otherTimeSet), []);
         });
     });
 
     // getTBA test
-    describe('#getTBA()', function() {
-        it('should ', function() {
-            assert.deepEqual(new CourseJS.TimeSet.getTBA(), {days:{Sun:[], Mon:[time1], Tue:[], Wed:[], Thu:[], Fri:[], Sat:[]}});
+    describe('#get TBA()', function() {
+        it('should return an empty timeSet', function() {
+            assert.deepEqual(new CourseJS.TimeSet.get TBA(), {days:{Sun:[], Mon:[time1], Tue:[], Wed:[], Thu:[], Fri:[], Sat:[]}});
         });
     });
 });

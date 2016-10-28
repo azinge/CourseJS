@@ -71,8 +71,9 @@ CourseJS.Course = class Course extends CourseJS.Entry {
      * Gets course related information from this Entry.
      * @return {CourseInfo} This entry's courseInfo property.
      */
-    getInfo () {
-        //TODO: Implement Function
+    getCourseInfo () {
+        var copyInfo = Object.assign({}, this.info);
+        return copyInfo;
     }
 };
 

@@ -222,7 +222,7 @@ CourseJS.EntryGroup = class EntryGroup {
      * @return {Info} This entry group's selected entry's Info property.
      */
     getInfo () {
-        //TODO: Implement Function
+        return getSelectedEntry().getInfo();
     }
 };
 
@@ -300,31 +300,31 @@ CourseJS.Schedule = class Schedule {
 CourseJS.TimeSet = class TimeSet {
     /**
      * Create a time set.
+     * TBA time sets will be represented as empty time sets
      * @param {Array<Time>|undefined} times An array of times comprising the time set.
      */
     constructor (times) {
         this.days = {Sun: [], Mon: [], Tue: [], Wed: [], Thu: [], Fri: [], Sat: []};
 
-        if (times == undefined) {
+        // if no params, creates TBA time set
+        if (!times) {
             return;
         }
 
-        if (typeof times.constructor != Array) {
+        if (!(times instanceof Array)) {
             throw new Error("Error in TimeSet Constructor: please use format TimeSet(Array<Time>)");
         }
 
         for (var i = 0; i < times.length; i++) {
-            if (!(times[i] instanceof CourseJS.Time)) {
+            if (!(times[i] instanceof CourseJS.Time) && times[i]) {
                 throw new Error("Error in TimeSet Constructor: please use format TimeSet(Array<Time>)");
             }
-            this.insert(times[i]);
+            if (!this.insert(times[i])) {
+                throw new Error("Error in TimeSet Constructor: TimeSet cannot have overlapping times");
+            }
         }
     }
 
-    getNextDay(day) {
-        var dayArray = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-        return dayArray[dayArray.indexOfday(day)+1];
-    }
     /**
      * Inserts a time into the time set.
      * Will split times crossing midnight into multiple separate times.
@@ -332,22 +332,31 @@ CourseJS.TimeSet = class TimeSet {
      * @return {boolean} Value representing whether the time was successfully added.
      */
     insert (time) {
-        while (time.start.day !== time.end.day) {
-            this.insert(new CourseJS.Time(time.start, {day: time.start.day, time:2359}));
-            time.start = {day: (CourseJS.TimeSet.getNextDay(time.start.day)), time:0};
-        }
-        if (this.days[time.start.day].length === 0) {
-            this.days[time.start.day].push(time[i].start.day);
+        if (!time) {
             return true;
-        } else {
-            for (i = 0; i < this.TimeSet.days[time.start.day].length; i++){
-                if (time.getOverlap(this.TimeSet.days[time.start.day][i]) !== Time()) {
-                    return false;
-                }
+        }
+
+        if (!(time instanceof CourseJS.Time)) {
+            throw new Error("Error in TimeSet.insert: please only insert time objects");
+        }
+
+        var insert = new CourseJS.Time({day: time.start.day, time: time.start.time}, {day: time.end.day, time: time.end.time});
+
+        var dayArray = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+        while (insert.start.day !== insert.end.day) {
+            this.insert(new CourseJS.Time({day: insert.start.day, time: insert.start.time}, {day: insert.start.day, time: 2359}));
+            insert.start.day = dayArray[(dayArray.indexOf(insert.start.day) + 1) % 7];
+            insert.start.time = 0;
+        }
+
+        for (var i = 0; i < this.days[insert.start.day].length; i++){
+            if (insert.getOverlap(this.days[insert.start.day][i]) !== CourseJS.Time.TBA) {
+                return false;
             }
-            this.TimeSet.days[time.start.day].push(times[i].start.day);
-            return true;
         }
+
+        this.days[insert.start.day].push(insert);
+        return true;
     }
 
     /**
@@ -356,9 +365,29 @@ CourseJS.TimeSet = class TimeSet {
      * @return {Array<Time>} An array of all of the times making up the time set.
      */
     getTimes (restriction) {
+
+        var restrictionTimes = [];
+        if (restriction) {
+            if (!(restriction instanceof CourseJS.TimeSet)) {
+                throw new Error("Error in TimeSet.getTimes(restriction): the restriction must either be undefined or a TimeSet");
+            } else {
+                restrictionTimes = restriction.getTimes();
+            }
+        }
+
         var allTimes = [];
-        for (var property in this.days) {
-            allTimes.concat(property);
+        for (var day in this.days) {
+            for (var i = 0; i < this.days[day].length; i++) {
+                var notRestricted = true;
+                for (var j = 0; j < restrictionTimes.length && notRestricted; j++) {
+                    if (this.days[day][i].getOverlap(restrictionTimes[j]) !== CourseJS.Time.TBA) {
+                        notRestricted = false;
+                    }
+                }
+                if (notRestricted) {
+                    allTimes.push(this.days[day][i]);
+                }
+            }
         }
         return allTimes;
     }
@@ -370,14 +399,28 @@ CourseJS.TimeSet = class TimeSet {
      * @return {Array<Time>} An array of all of the times making up the time set on a certain day.
      */
     getTimesByDay (day, restriction) {
-        return this.days(day).slice(0);
-    }
+        var restrictionTimes = [];
+        if (restriction) {
+            if (!(restriction instanceof CourseJS.TimeSet)) {
+                throw new Error("Error in TimeSet.getTimes(restriction): the restriction must either be undefined or a TimeSet");
+            } else {
+                restrictionTimes = restriction.getTimes();
+            }
+        }
 
-    /**
-     * Gets a TBA object
-     */
-    get TBA () {
-        return TimeSet();
+        var allTimes = [];
+        for (var i = 0; i < this.days[day].length; i++) {
+            var notRestricted = true;
+            for (var j = 0; j < restrictionTimes.length && notRestricted; j++) {
+                if (this.days[day][i].getOverlap(restrictionTimes[j]) !== CourseJS.Time.TBA) {
+                    notRestricted = false;
+                }
+            }
+            if (notRestricted) {
+                allTimes.push(this.days[day][i]);
+            }
+        }
+        return allTimes;
     }
 };
 

@@ -528,7 +528,7 @@ CourseJS.Info = class Info {
      */
     constructor (searchable, regular, hidden) {
         if (typeof searchable !== 'object' || typeof regular !== 'object' || typeof hidden !== 'object') {
-            throw "error in Info constructor: input for InfoProps should be objects";
+            throw new Error("error in Info constructor: input for InfoProps should be objects");
         }
         this.searchable = searchable;
         this.regular = regular;
@@ -558,7 +558,7 @@ CourseJS.CourseInfo = class CourseInfo extends CourseJS.Info {
      */
     constructor (searchable, regular, hidden, number, section, subject) {
         if (typeof number !== 'string' || typeof section !== 'string' || typeof subject !== 'string') {
-            throw "error in CourseInfo constructor: input for number, section, and subject should be strings";
+            throw new Error("error in CourseInfo constructor: input for number, section, and subject should be strings");
         }
 
         super(searchable, regular, hidden);

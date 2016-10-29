@@ -11,14 +11,16 @@ describe('Info', function() {
             var searchable = {};
             var regular = {};
             var hidden = {};
-            assert.deepEqual(new CourseJS.Info(searchabe, regular, hidden), {searcable:searchable, regular:regular, hidden:hidden});
+            assert.deepEqual(new CourseJS.Info(searchable, regular, hidden), {searchable:searchable, regular:regular, hidden:hidden});
         });
 
         it('should throw an error if the searchable, regular, or hidden properties are not objects', function() {
             var searchable = '';
             var regular = 6;
-            var hidden;
-            expect(function() {new CourseJS.Info(searchabe, regular, hidden);}).to.throw(Error);
+            var hidden = undefined;
+            expect(function() {new CourseJS.Info(searchabe, {}, {});}).to.throw(Error);
+            expect(function() {new CourseJS.Info({}, regular, {});}).to.throw(Error);
+            expect(function() {new CourseJS.Info({}, {}, hidden);}).to.throw(Error);
         });
     });
 });

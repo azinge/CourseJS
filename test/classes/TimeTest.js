@@ -15,6 +15,10 @@ describe('Time', function() {
             assert.deepEqual(time, {start:start, end:end});
         });
 
+        it('should create a TBA time if no parameters are given', function() {
+            assert.deepEqual(new CourseJS.Time(), {});
+        });
+
         it('should throw an error when start and end are the same moment', function() {
             var start = {day:'Mon', time:0};
             var end = {day:'Mon', time:0};
@@ -55,18 +59,12 @@ describe('Time', function() {
     // getOverlap test
     describe('#getOverlap()', function() {
         it('should return the overlapping time between two times', function() {
-            var time1 = new CourseJS.Time({day:'Mon', time:0}, {day:'Tue', time:0});
-            var time2 = new CourseJS.Time({day:'Mon', time:1200}, {day:'Tue', time:1200});
-            assert.deepEqual(time1.getOverlap(time2), {start:{day:'Mon', time:1200}, end:{day:'Tue', time:0}});
+            var time1 = new CourseJS.Time({day:'Mon', time:1000}, {day:'Mon', time:1200});
+            var time2 = new CourseJS.Time({day:'Mon', time:1100}, {day:'Mon', time:1300});
+            assert.deepEqual(time1.getOverlap(time2), {start:{day:'Mon', time:1100}, end:{day:'Mon', time:1200}});
         });
 
-        it('should return the overlapping time between two times', function() {
-            var time1 = new CourseJS.Time({day:'Mon', time:0}, {day:'Tue', time:0});
-            var time2 = new CourseJS.Time({day:'Mon', time:1200}, {day:'Tue', time:1200});
-            assert.deepEqual(time1.getOverlap(time2), {start:{day:'Mon', time:1200}, end:{day:'Tue', time:0}});
-        });
-
-        it('should return the overlapping time between two times', function() {
+        it('should return the overlapping time between two times even if they span over multiple days', function() {
             var time1 = new CourseJS.Time({day:'Mon', time:0}, {day:'Tue', time:0});
             var time2 = new CourseJS.Time({day:'Mon', time:1200}, {day:'Tue', time:1200});
             assert.deepEqual(time1.getOverlap(time2), {start:{day:'Mon', time:1200}, end:{day:'Tue', time:0}});
@@ -78,16 +76,29 @@ describe('Time', function() {
             assert.deepEqual(time1.getOverlap(time2), time2);
         });
 
-        it('should return an empty object for times that do no not overlap', function() {
-            var time1 = new CourseJS.Time({day:'Tue', time:800}, {day:'Tue', time:1000});
-            var time2 = new CourseJS.Time({day:'Mon', time:900}, {day:'Mon', time:1100});
-            expect(time1.getOverlap(time2)).equal({});
+        it('should return the overlapping time of two times that wrap from saturday to sunday', function() {
+            var time1 = new CourseJS.Time({day:'Sat', time:0}, {day:'Sun', time:1200});
+            var time2 = new CourseJS.Time({day:'Fri', time:0}, {day:'Sun', time:900});
+            assert.deepEqual(time1.getOverlap(time2), {start:{day:'Sat', time:0}, end:{day:'Sun', time:900}});
         });
 
-        it('should return an empty object for times that do no not overlap', function() {
+        it('should return TBA for times that do no not overlap', function() {
+            var time1 = new CourseJS.Time({day:'Tue', time:800}, {day:'Tue', time:1000});
+            var time2 = new CourseJS.Time({day:'Mon', time:900}, {day:'Mon', time:1100});
+            expect(time1.getOverlap(time2)).to.equal(CourseJS.Time.TBA);
+        });
+
+        it('should return TBA for times that do not overlap', function() {
             var time1 = new CourseJS.Time({day:'Sat', time:0}, {day:'Sat', time:1000});
             var time2 = new CourseJS.Time({day:'Sat', time:1000}, {day:'Sat', time:2000});
-            expect(time1.getOverlap(time2)).equal({});
+            expect(time1.getOverlap(time2)).to.equal(CourseJS.Time.TBA);
+        });
+    });
+
+    // get TBA Test
+    describe('#TBA', function() {
+        it('should return an empty Time object', function() {
+            expect(CourseJS.Time.TBA).to.equal(undefined);
         });
     });
 });

@@ -15,6 +15,10 @@ CourseJS.Entry = class Entry {
      * @param {Info} info An Info property that lists extra information about the particular entry.
      */
     constructor (alias, times, info) {
+        if (typeof alias != 'string' || !(times instanceof CourseJS.TimeSet) || !(info instanceof CourseJS.Info)) {
+            throw new Error("Error in Entry constructor: please use the format Entry(String, TimeSet, Info)");
+        }
+
         this.alias = alias;
         this.times = times;
         this.info = info;
@@ -30,12 +34,12 @@ CourseJS.Entry = class Entry {
         var entryTimes = entry.times.getTimes();
         var newTimeSet = TimeSet();
 
-        for (i = 0; i < theseTimes.length; i++) {
-            for (j = 0; j < entryTimes.length; j++) {
-                if (entryTimes[j].getOverlap(theseTimes[i]) !== Time()) {
+        for (var i = 0; i < theseTimes.length; i++) {
+            for (var j = 0; j < entryTimes.length; j++) {
+                if (entryTimes[j].getOverlap(theseTimes[i]) !== CourseJS.Time()) {
                     newTimeSet.insert(entryTimes[j].getOverlap(theseTimes[i]));
                 }
-            };
+            }
         }
     }
 
@@ -90,6 +94,20 @@ CourseJS.EntryGroup = class EntryGroup {
      * @param {String|undefined} title Name of the entry group.
      */
     constructor (entries, title) {
+        if (!entries || !title) {
+            throw new Error("Error in EntryGroup constructor: use the format EntryGroup(Array<Entry>, string)");
+        }
+
+        if (entries.constructor != Array || typeof title != 'string') {
+            throw new Error("Error in EntryGroup constructor: use the format EntryGroup(Array<Entry>, string)");
+        }
+
+        for (var i = 0; i < entries.length; i++) {
+            if (entries[i] instanceof CourseJS.Entry) {
+                throw new Error("Error in EntryGroup constructor: use the format EntryGroup(Array<Entry>, string)");
+            }
+        }
+
         this.entries = entries;
         this.title = title;
         this.selected = -1;
@@ -102,7 +120,18 @@ CourseJS.EntryGroup = class EntryGroup {
      * @return {boolean} Value representing whether the entry was successfully able to be added.
      */
     insert (entry) {
-        //TODO: Implement Function
+        if (!entry || entry instanceof CourseJS.Entry) {
+            return false;
+        }
+
+        for (var i = 0; i < entries.length; i++) {
+            if (entry.alias === entries[i].alias) {
+                return false;
+            }
+        }
+
+        entries[entries.length] = entry;
+        return true;
     }
 
     /**
@@ -111,7 +140,18 @@ CourseJS.EntryGroup = class EntryGroup {
      * @return {boolean} Value representing whether the entry was successfully able to be selected.
      */
     select (entry) {
-        //TODO: Implement Function
+        if (!entry || entry instanceof CourseJS.Entry) {
+            return false;
+        }
+
+        for (var i = 0; i < this.entries.length; i++) {
+            if (entry.alias === entries[i].alias) {
+                selected = i;
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -119,7 +159,14 @@ CourseJS.EntryGroup = class EntryGroup {
      * @param {Array<Entry>} entries Array of entries to be activated.
      */
     activate (entries) {
-        //TODO: Implement Function
+        for (var i = 0; i < entries.length; i++) {
+            for (var j = 0; j < this.entries.length; j++) {
+                if (entries[i].alias === this.entries[j].alias) {
+                    deactivate(entries[i]);
+                    active.push(j);
+                }
+            }
+        }
     }
 
     /**
@@ -127,7 +174,13 @@ CourseJS.EntryGroup = class EntryGroup {
      * @param {Array<Entry>} entries Array of entries to be deactivated.
      */
     deactivate (entries) {
-        //TODO: Implement Function
+        for (var i = 0; i < entries.length; i++) {
+            for (var j = 0; j < active.length; j++) {
+                if (entries[i].alias === this.entries[j].alias) {
+                    active.splice(j, 1);
+                }
+            }
+        }
     }
 
     /**
@@ -135,7 +188,7 @@ CourseJS.EntryGroup = class EntryGroup {
      * @return {Entry|undefined} This entry group's selected entry.
      */
     getSelectedEntry () {
-        //TODO: Implement Function
+        return entries[selected];
     }
 
     /**
@@ -143,7 +196,7 @@ CourseJS.EntryGroup = class EntryGroup {
      * @return {Array<Entry>|undefined} Array of activated entries in this entry group.
      */
     getActivatedEntries () {
-        //TODO: Implement Function
+        return active;
     }
 
     /**
@@ -169,7 +222,7 @@ CourseJS.EntryGroup = class EntryGroup {
      * @return {Info} This entry group's selected entry's Info property.
      */
     getInfo () {
-        //TODO: Implement Function
+        return getSelectedEntry().getInfo();
     }
 };
 
@@ -247,20 +300,31 @@ CourseJS.Schedule = class Schedule {
 CourseJS.TimeSet = class TimeSet {
     /**
      * Create a time set.
+     * TBA time sets will be represented as empty time sets
      * @param {Array<Time>|undefined} times An array of times comprising the time set.
      */
     constructor (times) {
         this.days = {Sun: [], Mon: [], Tue: [], Wed: [], Thu: [], Fri: [], Sat: []};
-        for (var i = 0; i < times.length; i++) {
-            this.insert(times[i]);
+
+        // if no params, creates TBA time set
+        if (!times) {
+            return;
         }
-        //If no params, TBA TimeSet
+
+        if (!(times instanceof Array)) {
+            throw new Error("Error in TimeSet Constructor: please use format TimeSet(Array<Time>)");
+        }
+
+        for (var i = 0; i < times.length; i++) {
+            if (!(times[i] instanceof CourseJS.Time) && times[i]) {
+                throw new Error("Error in TimeSet Constructor: please use format TimeSet(Array<Time>)");
+            }
+            if (!this.insert(times[i])) {
+                throw new Error("Error in TimeSet Constructor: TimeSet cannot have overlapping times");
+            }
+        }
     }
 
-    getNextDay(day) {
-        var dayArray = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-        return dayArray[dayArray.indexOfday(day)+1];
-    }
     /**
      * Inserts a time into the time set.
      * Will split times crossing midnight into multiple separate times.
@@ -268,22 +332,31 @@ CourseJS.TimeSet = class TimeSet {
      * @return {boolean} Value representing whether the time was successfully added.
      */
     insert (time) {
-        while (time.start.day !== time.end.day) {
-            this.insert(new CourseJS.Time(time.start, {day: time.start.day, time:2359}));
-            time.start = {day: (CourseJS.TimeSet.getNextDay(time.start.day)), time:0};
-        }
-        if (this.days[time.start.day].length === 0) {
-            this.days[time.start.day].push(time[i].start.day);
+        if (!time) {
             return true;
-        } else {
-            for (i = 0; i < this.TimeSet.days[time.start.day].length; i++){
-                if (time.getOverlap(this.TimeSet.days[time.start.day][i]) !== Time()) {
-                    return false;
-                }
+        }
+
+        if (!(time instanceof CourseJS.Time)) {
+            throw new Error("Error in TimeSet.insert: please only insert time objects");
+        }
+
+        var insert = new CourseJS.Time({day: time.start.day, time: time.start.time}, {day: time.end.day, time: time.end.time});
+
+        var dayArray = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+        while (insert.start.day !== insert.end.day) {
+            this.insert(new CourseJS.Time({day: insert.start.day, time: insert.start.time}, {day: insert.start.day, time: 2359}));
+            insert.start.day = dayArray[(dayArray.indexOf(insert.start.day) + 1) % 7];
+            insert.start.time = 0;
+        }
+
+        for (var i = 0; i < this.days[insert.start.day].length; i++){
+            if (insert.getOverlap(this.days[insert.start.day][i]) !== CourseJS.Time.TBA) {
+                return false;
             }
-            this.TimeSet.days[time.start.day].push(times[i].start.day);
-            return true;
         }
+
+        this.days[insert.start.day].push(insert);
+        return true;
     }
 
     /**
@@ -292,9 +365,29 @@ CourseJS.TimeSet = class TimeSet {
      * @return {Array<Time>} An array of all of the times making up the time set.
      */
     getTimes (restriction) {
+
+        var restrictionTimes = [];
+        if (restriction) {
+            if (!(restriction instanceof CourseJS.TimeSet)) {
+                throw new Error("Error in TimeSet.getTimes(restriction): the restriction must either be undefined or a TimeSet");
+            } else {
+                restrictionTimes = restriction.getTimes();
+            }
+        }
+
         var allTimes = [];
-        for (var property in this.days) {
-            allTimes.concat(property);
+        for (var day in this.days) {
+            for (var i = 0; i < this.days[day].length; i++) {
+                var notRestricted = true;
+                for (var j = 0; j < restrictionTimes.length && notRestricted; j++) {
+                    if (this.days[day][i].getOverlap(restrictionTimes[j]) !== CourseJS.Time.TBA) {
+                        notRestricted = false;
+                    }
+                }
+                if (notRestricted) {
+                    allTimes.push(this.days[day][i]);
+                }
+            }
         }
         return allTimes;
     }
@@ -306,14 +399,28 @@ CourseJS.TimeSet = class TimeSet {
      * @return {Array<Time>} An array of all of the times making up the time set on a certain day.
      */
     getTimesByDay (day, restriction) {
-        return this.days(day).slice(0);
-    }
+        var restrictionTimes = [];
+        if (restriction) {
+            if (!(restriction instanceof CourseJS.TimeSet)) {
+                throw new Error("Error in TimeSet.getTimes(restriction): the restriction must either be undefined or a TimeSet");
+            } else {
+                restrictionTimes = restriction.getTimes();
+            }
+        }
 
-    /**
-     * Gets a TBA object
-     */
-    get TBA () {
-        return TimeSet();
+        var allTimes = [];
+        for (var i = 0; i < this.days[day].length; i++) {
+            var notRestricted = true;
+            for (var j = 0; j < restrictionTimes.length && notRestricted; j++) {
+                if (this.days[day][i].getOverlap(restrictionTimes[j]) !== CourseJS.Time.TBA) {
+                    notRestricted = false;
+                }
+            }
+            if (notRestricted) {
+                allTimes.push(this.days[day][i]);
+            }
+        }
+        return allTimes;
     }
 };
 
@@ -329,6 +436,10 @@ CourseJS.Time = class Time {
      * @param {Moment} end The moment this time ends.
      */
     constructor (start, end) {
+        // create a TBA timeSet if no params given
+        if (!start && !end) {
+            return;
+        }
 
         // throw an error if start or end are not Moments
         if (typeof start != 'object' || !start.day || (!start.time && start.time !== 0) ||
@@ -365,22 +476,33 @@ CourseJS.Time = class Time {
      * @return {Time} time The time where the two times overlap.
      */
     getOverlap (time) {
-        var startTime = this.start.time;
-        var endTime = this.end.time;
-        var otherStartTime = time.start.time;
-        var otherEndTime = time.end.time;
+        var dayArray = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
-        if (startTime < otherStartTime && otherStartTime < endTime) {
-            if(otherEndTime<endTime || otherEndTime === endTime) {
-                return (new Time(otherStartTime, otherEndTime));
-            } else return (new Time(otherStartTime, endTime));
-        } else if (otherStartTime < startTime && startTime < otherEndTime) {
-            if(endTime<otherEndTime || endTime === otherEndTime) {
-                return (new Time(startTime, endTime));
-            } else return(new Time(startTime, otherEndTime));
+        var lastStartTime;
+        if (dayArray.indexOf(this.start.day) > dayArray.indexOf(time.start.day)) {
+            lastStartTime = this.start;
+        } else if (dayArray.indexOf(this.start.day) < dayArray.indexOf(time.start.day)) {
+            lastStartTime = time.start;
+        } else {
+            lastStartTime = (this.start.time > time.start.time ? this.start : time.start);
         }
 
-        return new Time();
+        var firstEndTime;
+        if (dayArray.indexOf(this.end.day) < dayArray.indexOf(time.end.day)) {
+            firstEndTime = this.end;
+        } else if (dayArray.indexOf(this.end.day) > dayArray.indexOf(time.end.day)) {
+            firstEndTime = time.end;
+        } else {
+            firstEndTime = (this.end.time < time.end.time ? this.end : time.end);
+        }
+
+        if (dayArray.indexOf(lastStartTime.day) < dayArray.indexOf(firstEndTime.day)) {
+            return new Time(lastStartTime, firstEndTime);
+        } else if (dayArray.indexOf(lastStartTime.day) == dayArray.indexOf(firstEndTime.day) && lastStartTime.time < firstEndTime.time) {
+            return new Time(lastStartTime, firstEndTime);
+        } else {
+            return Time.TBA;
+        }
     }
 
     /**
@@ -406,7 +528,7 @@ CourseJS.Info = class Info {
      */
     constructor (searchable, regular, hidden) {
         if (typeof searchable !== 'object' || typeof regular !== 'object' || typeof hidden !== 'object') {
-            throw "error in Info constructor: input for InfoProps should be objects";
+            throw new Error("error in Info constructor: input for InfoProps should be objects");
         }
         this.searchable = searchable;
         this.regular = regular;
@@ -436,8 +558,9 @@ CourseJS.CourseInfo = class CourseInfo extends CourseJS.Info {
      */
     constructor (searchable, regular, hidden, number, section, subject) {
         if (typeof number !== 'string' || typeof section !== 'string' || typeof subject !== 'string') {
-            throw "error in CourseInfo constructor: input for number, section, and subject should be strings";
+            throw new Error("error in CourseInfo constructor: input for number, section, and subject should be strings");
         }
+
         super(searchable, regular, hidden);
         this.number = number;
         this.section = section;

@@ -1,5 +1,8 @@
 install:
-- npm install
+    - npm install
 
 script:
-- npm test
+    - npm test
+
+node_js:
+    - "4"

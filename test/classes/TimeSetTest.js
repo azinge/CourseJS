@@ -72,7 +72,7 @@ describe('TimeSet', function() {
 
         it('should not throw an error if a TBA time object is given, and should return true', function() {
             var timeSet = new CourseJS.TimeSet();
-            var time1 = new CourseJS.Time.get TBA();
+            var time1 = new CourseJS.Time.TBA;
             expect(timeSet.insert(time1)).to.not.throw(Error).and.to.equal(true);
             assert.deepEqual(timeSet, new CourseJS.TimeSet());
         });

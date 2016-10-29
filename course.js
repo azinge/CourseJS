@@ -15,7 +15,7 @@ CourseJS.Entry = class Entry {
      * @param {Info} info An Info property that lists extra information about the particular entry.
      */
     constructor (alias, times, info) {
-        if (typeof alias != 'string' || times instanceof CourseJS.TimeSet || info instanceof CourseJS.Info) {
+        if (typeof alias != 'string' || !(times instanceof CourseJS.TimeSet) || !(info instanceof CourseJS.Info)) {
             throw new Error("Error in Entry constructor: please use the format Entry(String, TimeSet, Info)");
         }
 
@@ -102,8 +102,8 @@ CourseJS.EntryGroup = class EntryGroup {
             throw new Error("Error in EntryGroup constructor: use the format EntryGroup(Array<Entry>, string)");
         }
 
-        for (int i = 0; i < entries.length; i++) {
-            if (instanceof entries[i] != CourseJS.Entry) {
+        for (var i = 0; i < entries.length; i++) {
+            if (entries[i] instanceof CourseJS.Entry) {
                 throw new Error("Error in EntryGroup constructor: use the format EntryGroup(Array<Entry>, string)");
             }
         }
@@ -120,7 +120,7 @@ CourseJS.EntryGroup = class EntryGroup {
      * @return {boolean} Value representing whether the entry was successfully able to be added.
      */
     insert (entry) {
-        if (!entry || instanceof entry != CourseJS.Entry) {
+        if (!entry || entry instanceof CourseJS.Entry) {
             return false;
         }
 
@@ -140,7 +140,7 @@ CourseJS.EntryGroup = class EntryGroup {
      * @return {boolean} Value representing whether the entry was successfully able to be selected.
      */
     select (entry) {
-        if (!entry || instanceof entry != CourseJS.Entry) {
+        if (!entry || entry instanceof CourseJS.Entry) {
             return false;
         }
 
@@ -395,7 +395,6 @@ CourseJS.Time = class Time {
     constructor (start, end) {
         // create a TBA timeSet if no params given
         if (!start && !end) {
-            this = {};
             return;
         }
 
@@ -434,22 +433,33 @@ CourseJS.Time = class Time {
      * @return {Time} time The time where the two times overlap.
      */
     getOverlap (time) {
-        var startTime = this.start.time;
-        var endTime = this.end.time;
-        var otherStartTime = time.start.time;
-        var otherEndTime = time.end.time;
+        var dayArray = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
-        if (startTime < otherStartTime && otherStartTime < endTime) {
-            if(otherEndTime<endTime || otherEndTime === endTime) {
-                return (new Time(otherStartTime, otherEndTime));
-            } else return (new Time(otherStartTime, endTime));
-        } else if (otherStartTime < startTime && startTime < otherEndTime) {
-            if(endTime<otherEndTime || endTime === otherEndTime) {
-                return (new Time(startTime, endTime));
-            } else return(new Time(startTime, otherEndTime));
+        var lastStartTime;
+        if (dayArray.indexOf(this.start.day) > dayArray.indexOf(time.start.day)) {
+            lastStartTime = this.start;
+        } else if (dayArray.indexOf(this.start.day) < dayArray.indexOf(time.start.day)) {
+            lastStartTime = time.start;
+        } else {
+            lastStartTime = (this.start.time > time.start.time ? this.start : time.start);
         }
 
-        return new Time();
+        var firstEndTime;
+        if (dayArray.indexOf(this.end.day) < dayArray.indexOf(time.end.day)) {
+            firstEndTime = this.end;
+        } else if (dayArray.indexOf(this.end.day) > dayArray.indexOf(time.end.day)) {
+            firstEndTime = time.end;
+        } else {
+            firstEndTime = (this.end.time < time.end.time ? this.end : time.end);
+        }
+
+        if (dayArray.indexOf(lastStartTime.day) < dayArray.indexOf(firstEndTime.day)) {
+            return new Time(lastStartTime, firstEndTime);
+        } else if (dayArray.indexOf(lastStartTime.day) == dayArray.indexOf(firstEndTime.day) && lastStartTime.time < firstEndTime.time) {
+            return new Time(lastStartTime, firstEndTime);
+        } else {
+            return Time.TBA;
+        }
     }
 
     /**

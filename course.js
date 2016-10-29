@@ -300,7 +300,7 @@ CourseJS.Schedule = class Schedule {
 CourseJS.TimeSet = class TimeSet {
     /**
      * Create a time set.
-     * TBA time sets will be represented as empty time sets
+     * TBA time sets will be represented as empty time sets.
      * @param {Array<Time>|undefined} times An array of times comprising the time set.
      */
     constructor (times) {

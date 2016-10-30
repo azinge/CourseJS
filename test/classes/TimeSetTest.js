@@ -28,12 +28,6 @@ describe('TimeSet', function() {
             expect(function() {new CourseJS.TimeSet([time1, time2]);}).to.throw(Error);
         });
 
-        it('should put a time into the day of its start if it spans over multiple days', function() {
-            var time1 = new CourseJS.Time({day:'Mon', time:1800}, {day:'Tue', time:200});
-            assert.deepEqual(new CourseJS.TimeSet([time1]), {days:{Sun:[], Mon:[new CourseJS.Time({day:'Mon', time:1800}, {day:'Mon', time:2359})],
-                    Tue:[new CourseJS.Time({day:'Tue', time:0}, {day:'Tue', time:200})], Wed:[], Thu:[], Fri:[], Sat:[]}});
-        });
-
         it('should throw an error if the objects given are not times', function() {
             expect(function() {new CourseJS.TimeSet([{flavor:'chocolate', quantity: 2}, {flavor:'vanilla', quantity:900}]);}).to.throw(Error);
         });
@@ -46,14 +40,6 @@ describe('TimeSet', function() {
             var time1 = new CourseJS.Time({day:'Mon', time:800}, {day:'Mon', time:900});
             expect(timeSet.insert(time1)).to.equal(true);
             assert.deepEqual(timeSet, {days: {Sun:[], Mon:[time1], Tue:[], Wed:[], Thu:[], Fri:[], Sat:[]}});
-        });
-
-        it('should split and insert times with multiple days into a timeSet and return true', function() {
-            var timeSet = new CourseJS.TimeSet();
-            var time1 = new CourseJS.Time({day:'Mon', time:800}, {day:'Tue', time:900});
-            expect(timeSet.insert(time1)).to.equal(true);
-            assert.deepEqual(timeSet, {days: {Sun:[], Mon:[new CourseJS.Time({day:'Mon', time:800}, {day:'Mon', time:2359})],
-                    Tue:[new CourseJS.Time({day:'Tue', time:0}, {day:'Tue', time:900})], Wed:[], Thu:[], Fri:[], Sat:[]}});
         });
 
         it('should add a time to a timeSet, but return false if the same time or an overlapping time is added later', function() {
@@ -87,15 +73,14 @@ describe('TimeSet', function() {
         var time3 = new CourseJS.Time({day:'Fri', time:800}, {day:'Fri', time:900});
         var times = [time1, time2, time3];
         var otherTimes = [time1, time3];
+        var timeSet1 = new CourseJS.TimeSet(times);
+        var timeSet2 = new CourseJS.TimeSet(otherTimes);
 
         it('should get all times from the TimeSet', function() {
-            var timeSet = new CourseJS.TimeSet(times);
-            assert.deepEqual(timeSet.getTimes(), times);
+            assert.deepEqual(timeSet1.getTimes(), times);
         });
 
         it('should get all times from the TimeSet that do not overlap with the parameter timeSet', function() {
-            var timeSet1 = new CourseJS.TimeSet(times);
-            var timeSet2 = new CourseJS.TimeSet(otherTimes);
             assert.deepEqual(timeSet1.getTimes(timeSet2), [time2]);
         });
     });

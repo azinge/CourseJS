@@ -202,10 +202,14 @@ CourseJS.EntryGroup = class EntryGroup {
     /**
      * Gets the overlapping time sets between an entry and this entry group's active entries.
      * @param {Course} entry The entry to be compared against.
-     * @return {Array<TimeSet>} An array of time sets overlapping between the two entries.
+     * @return {Array<TimeSet>} An array of time sets overlapping between an entry and this entry group's active entries.
      */
     getOverlappingTimeSets (entry) {
-        //TODO: Implement Function
+        var overlappingTimeSets = [];
+
+        for (var i = 0; i < this.active.length; i++) {
+            overlappingTimeSets.push(entry.getOverlappingTimeSets(this.active[i]));
+        }
     }
 
     /**
@@ -214,7 +218,11 @@ CourseJS.EntryGroup = class EntryGroup {
      * @return {boolean} Value representing whether the two entry groups are compatible.
      */
     isCompatibleWithEntryGroup (entryGroup) {
-        //TODO: Implement Function
+        var overlappingTimeSets = entryGroup.getOverlappingTimeSets(this.getSelectedEntry());
+
+        // for (var i = 0; i < overlappingTimeSets.length; i++) {
+        //     if ()
+        // }
     }
 
     /**
@@ -340,22 +348,13 @@ CourseJS.TimeSet = class TimeSet {
             throw new Error("Error in TimeSet.insert: please only insert time objects");
         }
 
-        var insert = new CourseJS.Time({day: time.start.day, time: time.start.time}, {day: time.end.day, time: time.end.time});
-
-        var dayArray = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-        while (insert.start.day !== insert.end.day) {
-            this.insert(new CourseJS.Time({day: insert.start.day, time: insert.start.time}, {day: insert.start.day, time: 2359}));
-            insert.start.day = dayArray[(dayArray.indexOf(insert.start.day) + 1) % 7];
-            insert.start.time = 0;
-        }
-
-        for (var i = 0; i < this.days[insert.start.day].length; i++){
-            if (insert.getOverlap(this.days[insert.start.day][i]) !== CourseJS.Time.TBA) {
+        for (var i = 0; i < this.days[time.start.day].length; i++){
+            if (!time.getOverlap(this.days[time.start.day][i]).isTBA()) {
                 return false;
             }
         }
 
-        this.days[insert.start.day].push(insert);
+        this.days[time.start.day].push(time);
         return true;
     }
 
@@ -380,7 +379,7 @@ CourseJS.TimeSet = class TimeSet {
             for (var i = 0; i < this.days[day].length; i++) {
                 var notRestricted = true;
                 for (var j = 0; j < restrictionTimes.length && notRestricted; j++) {
-                    if (this.days[day][i].getOverlap(restrictionTimes[j]) !== CourseJS.Time.TBA) {
+                    if (!this.days[day][i].getOverlap(restrictionTimes[j]).isTBA()) {
                         notRestricted = false;
                     }
                 }
@@ -432,6 +431,7 @@ CourseJS.TimeSet = class TimeSet {
 CourseJS.Time = class Time {
     /**
      * Create a time.
+     * TBA times will be represented as empty objects.
      * @param {Moment} start The moment this time starts.
      * @param {Moment} end The moment this time ends.
      */
@@ -447,27 +447,28 @@ CourseJS.Time = class Time {
             throw new Error("error in Time constructor: start and end must be of type Moment");
         }
 
+        if (start.day !== end.day) {
+            throw new Error("error in Time constructor: start and end moments cannot be on different days");
+        }
+
         // throw error if start and end are the same Moment
-        else if (start.day === end.day && start.time === end.time) {
+        if (start.time === end.time) {
             throw new Error("error in Time constructor: start and end cannot be the same Moment");
         }
 
         // throw error if start or end have incorrect numbers represeting a military time
-        else if (start.time >= 2400 || start.time < 0 || start.time % 100 >= 60 || start.time % 1 !== 0 ||
+        if (start.time >= 2400 || start.time < 0 || start.time % 100 >= 60 || start.time % 1 !== 0 ||
                 end.time >= 2400 || end.time < 0 || end.time % 100 >= 60 || end.time % 1 !== 0) {
             throw new Error("error in Time constructor: start and end must have military times for their times");
         }
 
         // throw error if start or end have strings that aren't real days
-        else if ((start.day !== 'Sun' && start.day !== 'Mon' && start.day !== 'Tue' && start.day !== 'Wed' && start.day !== 'Thu' && start.day !== 'Fri' && start.day !== 'Sat') ||
-                (end.day !== 'Sun' && end.day !== 'Mon' && end.day !== 'Tue' && end.day !== 'Wed' && end.day !== 'Thu' && end.day !== 'Fri' && end.day !== 'Sat')) {
+        if (start.day !== 'Sun' && start.day !== 'Mon' && start.day !== 'Tue' && start.day !== 'Wed' && start.day !== 'Thu' && start.day !== 'Fri' && start.day !== 'Sat') {
             throw new Error("error in Time constructor: days must be one of the following {Sun, Mon, Tue, Wed, Thu, Fri, Sat, Sun}");
         }
 
-        else {
-            this.start = start;
-            this.end = end;
-        }
+        this.start = start;
+        this.end = end;
     }
 
     /**
@@ -476,40 +477,24 @@ CourseJS.Time = class Time {
      * @return {Time} time The time where the two times overlap.
      */
     getOverlap (time) {
-        var dayArray = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-
-        var lastStartTime;
-        if (dayArray.indexOf(this.start.day) > dayArray.indexOf(time.start.day)) {
-            lastStartTime = this.start;
-        } else if (dayArray.indexOf(this.start.day) < dayArray.indexOf(time.start.day)) {
-            lastStartTime = time.start;
-        } else {
-            lastStartTime = (this.start.time > time.start.time ? this.start : time.start);
+        if (this.start.day !== time.start.day) {
+            return new Time();
         }
 
-        var firstEndTime;
-        if (dayArray.indexOf(this.end.day) < dayArray.indexOf(time.end.day)) {
-            firstEndTime = this.end;
-        } else if (dayArray.indexOf(this.end.day) > dayArray.indexOf(time.end.day)) {
-            firstEndTime = time.end;
-        } else {
-            firstEndTime = (this.end.time < time.end.time ? this.end : time.end);
-        }
-
-        if (dayArray.indexOf(lastStartTime.day) < dayArray.indexOf(firstEndTime.day)) {
-            return new Time(lastStartTime, firstEndTime);
-        } else if (dayArray.indexOf(lastStartTime.day) == dayArray.indexOf(firstEndTime.day) && lastStartTime.time < firstEndTime.time) {
-            return new Time(lastStartTime, firstEndTime);
-        } else {
-            return Time.TBA;
-        }
+        var lastStartTime = (this.start.time > time.start.time ? this.start : time.start);
+        var firstEndTime = (this.end.time < time.end.time ? this.end : time.end);
+        return lastStartTime.time < firstEndTime.time ? new Time(lastStartTime, firstEndTime) : new Time();
     }
 
     /**
-     * Gets a TBA object
+     * returns whether or not this time is a TBA Time object.
+     * @return {Time} boolean The boolean for wheter or not this time is a TBA Time Object.
      */
-    get TBA () {
-        return Time();
+    isTBA () {
+        for (var prop in this) {
+            return false;
+        }
+        return true;
     }
 };
 

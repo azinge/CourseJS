@@ -47,8 +47,6 @@ describe('Entry', function() {
             assert.deepEqual(times1, entry3.getOverlappingTimeSet(entry1));
         });
 
-
-
     });
 
     // getInfo test

@@ -324,7 +324,7 @@ CourseJS.TimeSet = class TimeSet {
         if (!(times instanceof Array)) {
             throw new Error("Error in TimeSet Constructor: please use format TimeSet(Array<Time>)");
         }
-
+        
         for (var i = 0; i < times.length; i++) {
             if (!(times[i] instanceof CourseJS.Time) && times[i]) {
                 throw new Error("Error in TimeSet Constructor: please use format TimeSet(Array<Time>)");

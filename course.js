@@ -32,15 +32,16 @@ CourseJS.Entry = class Entry {
     getOverlappingTimeSet (entry) {
         var theseTimes = this.times.getTimes();
         var entryTimes = entry.times.getTimes();
-        var newTimeSet = TimeSet();
+        var newTimeSet = new CourseJS.TimeSet();
 
         for (var i = 0; i < theseTimes.length; i++) {
             for (var j = 0; j < entryTimes.length; j++) {
-                if (entryTimes[j].getOverlap(theseTimes[i]) !== CourseJS.Time()) {
+                if (! entryTimes[j].getOverlap(theseTimes[i]).isTBA()) {
                     newTimeSet.insert(entryTimes[j].getOverlap(theseTimes[i]));
                 }
             }
         }
+        return newTimeSet;
     }
 
     /**
@@ -75,8 +76,9 @@ CourseJS.Course = class Course extends CourseJS.Entry {
      * Gets course related information from this Entry.
      * @return {CourseInfo} This entry's courseInfo property.
      */
-    getInfo () {
-        //TODO: Implement Function
+    getCourseInfo () {
+        var copyInfo = Object.assign({}, this.info);
+        return copyInfo;
     }
 };
 
@@ -322,7 +324,7 @@ CourseJS.TimeSet = class TimeSet {
         if (!(times instanceof Array)) {
             throw new Error("Error in TimeSet Constructor: please use format TimeSet(Array<Time>)");
         }
-
+        
         for (var i = 0; i < times.length; i++) {
             if (!(times[i] instanceof CourseJS.Time) && times[i]) {
                 throw new Error("Error in TimeSet Constructor: please use format TimeSet(Array<Time>)");

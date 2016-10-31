@@ -16,7 +16,7 @@ CourseJS.Entry = class Entry {
      */
     constructor (alias, times, info) {
         if (typeof alias != 'string' || !(times instanceof CourseJS.TimeSet) || !(info instanceof CourseJS.Info)) {
-            throw new Error("Error in Entry constructor: please use the format Entry(String, TimeSet, Info)");
+            throw new Error('Error in Entry constructor: please use the format Entry(String, TimeSet, Info)');
         }
 
         this.alias = alias;
@@ -97,16 +97,16 @@ CourseJS.EntryGroup = class EntryGroup {
      */
     constructor (entries, title) {
         if (!entries || !title) {
-            throw new Error("Error in EntryGroup constructor: use the format EntryGroup(Array<Entry>, string)");
+            throw new Error('error in EntryGroup constructor: use the format EntryGroup(Array<Entry>, string)');
         }
 
-        if (entries.constructor != Array || typeof title != 'string') {
-            throw new Error("Error in EntryGroup constructor: use the format EntryGroup(Array<Entry>, string)");
+        if (!(entries instanceof Array) || typeof title != 'string') {
+            throw new Error('error in EntryGroup constructor: use the format EntryGroup(Array<Entry>, string)');
         }
 
         for (var i = 0; i < entries.length; i++) {
-            if (entries[i] instanceof CourseJS.Entry) {
-                throw new Error("Error in EntryGroup constructor: use the format EntryGroup(Array<Entry>, string)");
+            if (!(entries[i] instanceof CourseJS.Entry)) {
+                throw new Error('error in EntryGroup constructor: use the format EntryGroup(Array<Entry>, string)');
             }
         }
 
@@ -122,17 +122,17 @@ CourseJS.EntryGroup = class EntryGroup {
      * @return {boolean} Value representing whether the entry was successfully able to be added.
      */
     insert (entry) {
-        if (!entry || entry instanceof CourseJS.Entry) {
+        if (!entry || !(entry instanceof CourseJS.Entry)) {
             return false;
         }
 
-        for (var i = 0; i < entries.length; i++) {
-            if (entry.alias === entries[i].alias) {
+        for (var i = 0; i < this.entries.length; i++) {
+            if (entry.alias === this.entries[i].alias) {
                 return false;
             }
         }
 
-        entries[entries.length] = entry;
+        this.entries[this.entries.length] = entry;
         return true;
     }
 
@@ -142,13 +142,13 @@ CourseJS.EntryGroup = class EntryGroup {
      * @return {boolean} Value representing whether the entry was successfully able to be selected.
      */
     select (entry) {
-        if (!entry || entry instanceof CourseJS.Entry) {
+        if (!entry || !(entry instanceof CourseJS.Entry)) {
             return false;
         }
 
         for (var i = 0; i < this.entries.length; i++) {
-            if (entry.alias === entries[i].alias) {
-                selected = i;
+            if (entry.alias === this.entries[i].alias) {
+                this.selected = i;
                 return true;
             }
         }
@@ -161,11 +161,27 @@ CourseJS.EntryGroup = class EntryGroup {
      * @param {Array<Entry>} entries Array of entries to be activated.
      */
     activate (entries) {
+        if (!(entries instanceof Array)) {
+            throw new Error('error in EntryGroup.activate(entries): entries must be an array');
+        }
+
         for (var i = 0; i < entries.length; i++) {
+            if (!(entries[i] instanceof CourseJS.Entry)) {
+                throw new Error('error in EntryGroup.activate(entries): entries must be an array of entries')
+            }
+
             for (var j = 0; j < this.entries.length; j++) {
                 if (entries[i].alias === this.entries[j].alias) {
-                    deactivate(entries[i]);
-                    active.push(j);
+                    var alreadyActive = false;
+                    for (var k = 0; k < this.active.length && !alreadyActive; k++) {
+                        if (j === this.active[k]) {
+                            alreadyActive = true;
+                        }
+                    }
+
+                    if (!alreadyActive) {
+                        this.active.push(j);
+                    }
                 }
             }
         }
@@ -176,10 +192,19 @@ CourseJS.EntryGroup = class EntryGroup {
      * @param {Array<Entry>} entries Array of entries to be deactivated.
      */
     deactivate (entries) {
+        if (!(entries instanceof Array)) {
+            throw new Error('error in EntryGroup.activate(entries): entries must be an array');
+        }
+
         for (var i = 0; i < entries.length; i++) {
-            for (var j = 0; j < active.length; j++) {
-                if (entries[i].alias === this.entries[j].alias) {
-                    active.splice(j, 1);
+            if (!(entries[i] instanceof CourseJS.Entry)) {
+                throw new Error('error in EntryGroup.activate(entries): the elements of entries must be entries')
+            }
+
+            for (var j = 0; j < this.active.length; j++) {
+                if (entries[i].alias === this.entries[this.active[j]].alias) {
+                    this.active.splice(j, 1);
+                    j--;
                 }
             }
         }
@@ -190,7 +215,7 @@ CourseJS.EntryGroup = class EntryGroup {
      * @return {Entry|undefined} This entry group's selected entry.
      */
     getSelectedEntry () {
-        return entries[selected];
+        return this.entries[this.selected];
     }
 
     /**
@@ -198,33 +223,53 @@ CourseJS.EntryGroup = class EntryGroup {
      * @return {Array<Entry>|undefined} Array of activated entries in this entry group.
      */
     getActivatedEntries () {
-        return active;
+        return this.active;
     }
 
     /**
-     * Gets the overlapping time sets between an entry and this entry group's active entries.
+     * Gets the overlapping time sets between an entry and the entry group's selected entry.
      * @param {Course} entry The entry to be compared against.
-     * @return {Array<TimeSet>} An array of time sets overlapping between an entry and this entry group's active entries.
+     * @return {Array<TimeSet>} An array of time sets overlapping between an entry and this entry group's selected entry.
      */
     getOverlappingTimeSets (entry) {
+        if (!(entry instanceof CourseJS.Entry)) {
+            throw new Error('error in EntryGroup.getOverlappingTimeSets(entry): the argument must be an entry');
+        }
+
         var overlappingTimeSets = [];
 
         for (var i = 0; i < this.active.length; i++) {
-            overlappingTimeSets.push(entry.getOverlappingTimeSets(this.active[i]));
+            overlappingTimeSets.push(entry.getOverlappingTimeSet(this.entries[this.active[i]]));
         }
+
+        return overlappingTimeSets;
     }
 
     /**
-     * Checks if this entry group and another entry group's active entries are compatible with one another.
+     * Checks if this entry group's selected entry and another entry group's active entries are compatible with one another.
      * @param {EntryGroup} entryGroup The entry group to be compared against.
      * @return {boolean} Value representing whether the two entry groups are compatible.
      */
     isCompatibleWithEntryGroup (entryGroup) {
+        if (this.getSelectedEntry === undefined) {
+            throw new Error('error in EntryGroup.isCompatibleWithEntryGroup(otherEntryGroup): Entry Group must have a selected entry')
+        }
+
+        if (!(entryGroup instanceof CourseJS.EntryGroup)) {
+            throw new Error('error in EntryGroup.isCompatibleWithEntryGroup(otherEntryGroup): the argument must be an Entry Group')
+        }
+
         var overlappingTimeSets = entryGroup.getOverlappingTimeSets(this.getSelectedEntry());
 
-        // for (var i = 0; i < overlappingTimeSets.length; i++) {
-        //     if ()
-        // }
+        for (var i = 0; i < overlappingTimeSets.length; i++) {
+            for (var day in overlappingTimeSets[i].days) {
+                if (overlappingTimeSets[i].days[day][0]) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -232,7 +277,7 @@ CourseJS.EntryGroup = class EntryGroup {
      * @return {Info} This entry group's selected entry's Info property.
      */
     getInfo () {
-        return getSelectedEntry().getInfo();
+        return this.getSelectedEntry() === undefined ? undefined : this.getSelectedEntry().getInfo();
     }
 };
 
@@ -253,25 +298,6 @@ CourseJS.Schedule = class Schedule {
         this.owner = owner;
         this.title = title;
         this.items = items;
-    }
-
-    /**
-     * Checks if an item is compatible with this schedule.
-     * If it's an entry group, checks if any of the active entries are compatible with the schedule.
-     * @param {Entry|EntryGroup} item Item to be added to the schedule.
-     * @return {boolean} Value representing whether the item is compatible with the schedule.
-     */
-    isCompatibleWithSchedule (item) {
-        //TODO: Implement Function
-    }
-
-    /**
-     * Inserts an item into this schedule.
-     * @param {Entry|EntryGroup} item Item to be added to this schedule.
-     * @return {boolean} Value representing whether the item was successfully added.
-     */
-    insert (item) {
-        //TODO: Implement Function
     }
 
     /**
@@ -322,15 +348,15 @@ CourseJS.TimeSet = class TimeSet {
         }
 
         if (!(times instanceof Array)) {
-            throw new Error("Error in TimeSet Constructor: please use format TimeSet(Array<Time>)");
+            throw new Error('Error in TimeSet Constructor: please use format TimeSet(Array<Time>)');
         }
-        
+
         for (var i = 0; i < times.length; i++) {
             if (!(times[i] instanceof CourseJS.Time) && times[i]) {
-                throw new Error("Error in TimeSet Constructor: please use format TimeSet(Array<Time>)");
+                throw new Error('Error in TimeSet Constructor: please use format TimeSet(Array<Time>)');
             }
             if (!this.insert(times[i])) {
-                throw new Error("Error in TimeSet Constructor: TimeSet cannot have overlapping times");
+                throw new Error('Error in TimeSet Constructor: TimeSet cannot have overlapping times');
             }
         }
     }
@@ -347,7 +373,7 @@ CourseJS.TimeSet = class TimeSet {
         }
 
         if (!(time instanceof CourseJS.Time)) {
-            throw new Error("Error in TimeSet.insert: please only insert time objects");
+            throw new Error('Error in TimeSet.insert: please only insert time objects');
         }
 
         for (var i = 0; i < this.days[time.start.day].length; i++){
@@ -370,7 +396,7 @@ CourseJS.TimeSet = class TimeSet {
         var restrictionTimes = [];
         if (restriction) {
             if (!(restriction instanceof CourseJS.TimeSet)) {
-                throw new Error("Error in TimeSet.getTimes(restriction): the restriction must either be undefined or a TimeSet");
+                throw new Error('Error in TimeSet.getTimes(restriction): the restriction must either be undefined or a TimeSet');
             } else {
                 restrictionTimes = restriction.getTimes();
             }
@@ -403,7 +429,7 @@ CourseJS.TimeSet = class TimeSet {
         var restrictionTimes = [];
         if (restriction) {
             if (!(restriction instanceof CourseJS.TimeSet)) {
-                throw new Error("Error in TimeSet.getTimes(restriction): the restriction must either be undefined or a TimeSet");
+                throw new Error('Error in TimeSet.getTimes(restriction): the restriction must either be undefined or a TimeSet');
             } else {
                 restrictionTimes = restriction.getTimes();
             }
@@ -446,27 +472,27 @@ CourseJS.Time = class Time {
         // throw an error if start or end are not Moments
         if (typeof start != 'object' || !start.day || (!start.time && start.time !== 0) ||
                 typeof end != 'object' || !end.day || (!end.time && end.time !== 0)) {
-            throw new Error("error in Time constructor: start and end must be of type Moment");
+            throw new Error('error in Time constructor: start and end must be of type Moment');
         }
 
         if (start.day !== end.day) {
-            throw new Error("error in Time constructor: start and end moments cannot be on different days");
+            throw new Error('error in Time constructor: start and end moments cannot be on different days');
         }
 
         // throw error if start and end are the same Moment
         if (start.time === end.time) {
-            throw new Error("error in Time constructor: start and end cannot be the same Moment");
+            throw new Error('error in Time constructor: start and end cannot be the same Moment');
         }
 
         // throw error if start or end have incorrect numbers represeting a military time
         if (start.time >= 2400 || start.time < 0 || start.time % 100 >= 60 || start.time % 1 !== 0 ||
                 end.time >= 2400 || end.time < 0 || end.time % 100 >= 60 || end.time % 1 !== 0) {
-            throw new Error("error in Time constructor: start and end must have military times for their times");
+            throw new Error('error in Time constructor: start and end must have military times for their times');
         }
 
         // throw error if start or end have strings that aren't real days
         if (start.day !== 'Sun' && start.day !== 'Mon' && start.day !== 'Tue' && start.day !== 'Wed' && start.day !== 'Thu' && start.day !== 'Fri' && start.day !== 'Sat') {
-            throw new Error("error in Time constructor: days must be one of the following {Sun, Mon, Tue, Wed, Thu, Fri, Sat, Sun}");
+            throw new Error('error in Time constructor: days must be one of the following {Sun, Mon, Tue, Wed, Thu, Fri, Sat, Sun}');
         }
 
         this.start = start;
@@ -515,7 +541,7 @@ CourseJS.Info = class Info {
      */
     constructor (searchable, regular, hidden) {
         if (typeof searchable !== 'object' || typeof regular !== 'object' || typeof hidden !== 'object') {
-            throw new Error("error in Info constructor: input for InfoProps should be objects");
+            throw new Error('error in Info constructor: input for InfoProps should be objects');
         }
         this.searchable = searchable;
         this.regular = regular;
@@ -545,7 +571,7 @@ CourseJS.CourseInfo = class CourseInfo extends CourseJS.Info {
      */
     constructor (searchable, regular, hidden, number, section, subject) {
         if (typeof number !== 'string' || typeof section !== 'string' || typeof subject !== 'string') {
-            throw new Error("error in CourseInfo constructor: input for number, section, and subject should be strings");
+            throw new Error('error in CourseInfo constructor: input for number, section, and subject should be strings');
         }
 
         super(searchable, regular, hidden);

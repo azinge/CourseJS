@@ -31,6 +31,10 @@ describe('TimeSet', function() {
         it('should throw an error if the objects given are not times', function() {
             expect(function() {new CourseJS.TimeSet([{flavor:'chocolate', quantity: 2}, {flavor:'vanilla', quantity:900}]);}).to.throw(Error);
         });
+
+        it('should throw an if the times parameter is not an array', function() {
+            expect(function() {new CourseJS.TimeSet(new CourseJS.Time({day:'Mon', time:800}, {day:'Mon', time:850}));}).to.throw(Error);
+        });
     });
 
     // insert test
@@ -61,7 +65,7 @@ describe('TimeSet', function() {
 
         it('should throw an error if the parameter given is not a Time object', function() {
             var timeSet = new CourseJS.TimeSet();
-            var time1 = {mood:"happy", face:"smile"};
+            var time1 = {mood:'happy', face:'smile'};
             expect(function() {timeSet.insert(time1);}).to.throw(Error);
         });
     });

@@ -32,7 +32,7 @@ describe('TimeSet', function() {
             expect(function() {new CourseJS.TimeSet([{flavor:'chocolate', quantity: 2}, {flavor:'vanilla', quantity:900}]);}).to.throw(Error);
         });
 
-        it('should throw an if the times parameter is not an array', function() {
+        it('should throw an error if the times parameter is not an array', function() {
             expect(function() {new CourseJS.TimeSet(new CourseJS.Time({day:'Mon', time:800}, {day:'Mon', time:850}));}).to.throw(Error);
         });
     });

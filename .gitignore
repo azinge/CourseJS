@@ -1,7 +1,3 @@
-# Hinting/Linting config files #
-######################
-.jshintrc
-
 # Built node modules #
 ######################
 /node_modules

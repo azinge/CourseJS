@@ -53,6 +53,13 @@ describe('Entry', function() {
 
     // getInfo test
     describe('#getInfo()', function() {
-        //TODO: Implement Test
+        var time1 = new CourseJS.Time({day:'Mon', time:800}, {day:'Mon', time:850});
+        var times1 = new CourseJS.TimeSet([time1]);
+        var info = new CourseJS.Info({}, {}, {});
+        var entry1 = new CourseJS.Entry('Alias', times1, info);
+
+        it('should return an info object', function() {
+            assert.deepEqual(info, entry1.getInfo());
+        });
     });
 });
